@@ -1,0 +1,23 @@
+#LIFERAY
+LIFERAY_FOLDER=/opt/liferay-ee-6.0.1/
+LIFERAY_BACKUP_FILE=LIFERAY_ROOT_CLEAN.tar.gz
+LIFERAY_DEPLOY_FOLDER=/opt/liferay-ee-6.0.1/deploy/
+LIFERAY_UNIX_USER=tomcat
+LIFERAY_UNIX_GROUP=tomcat
+
+#MYSQL
+MYSQL_USER=root
+MYSQL_PASSWORD=
+MYSQL_DATABASE=liferay
+
+
+# VAR DU SCRIPT
+SCRIPT_FOLDER_PORTLET=/var/script/vdn-maj-integration/portlets/
+SCRIPT_LIFERAY_BACKUP=/var/script/vdn-maj-integration/backup/LIFERAY_ROOT_CLEAN.tar.gz
+WEBXML_LIFERAY_BACKUP=/var/script/vdn-maj-integration/backup/web.xml
+SCRIPT_BDD_BACKUP=/var/script/vdn-maj-integration/backup/MYSQL_CLEAN.sql
+SCRIPT_FOLDER_BACKUP=/var/script/vdn-maj-integration/backup
+
+#SOLR
+SOLR_URL=http://127.0.0.1:8983/solr/update
+
