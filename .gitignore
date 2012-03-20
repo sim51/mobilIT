@@ -2,19 +2,19 @@
 .classpath
 .project
 .settings/
-./mobilIT-neo4j/.classpath
-./mobilIT-neo4j/.project
-./mobilIT-neo4j/.settings/
-./mobilIT-neo4j/target/
-./mobilIT-play/.classpath
-./mobilIT-play/.project
-./mobilIT-play/.settings/
+mobilIT-neo4j/.classpath
+mobilIT-neo4j/.project
+mobilIT-neo4j/.settings/
+mobilIT-play/.classpath
+mobilIT-play/.project
+mobilIT-play/.settings/
 
 #NEO4J PLUGIN GIT IGNORE
-./mobilIT-neo4j/target/
+mobilIT-neo4j/target/
+
 #PLAY GIT IGNORE
-./mobilIT-play/logs
-./mobilIT-play/project/project
-./mobilIT-play/project/target
-./mobilIT-play/target
-./mobilIT-play/tmp
+mobilIT-play/logs
+mobilIT-play/project/project
+mobilIT-play/project/target
+mobilIT-play/target
+mobilIT-play/tmp
