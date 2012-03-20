@@ -1,0 +1,21 @@
+#ECLIPSE GIT IGNORE 
+.classpath
+.project
+.settings/
+./neo4j-mobilIT/.classpath
+./neo4j-mobilIT/.project
+./neo4j-mobilIT/.settings/
+./neo4j-mobilIT/target/
+./play-mobilIT/.classpath
+./play-mobilIT/.project
+./play-mobilIT/.settings/
+
+#NEO4J PLUGIN GIT IGNORE
+neo4j-mobilIT/target/
+
+#PLAY GIT IGNORE
+./play-mobilIT/logs
+./play-mobilIT/project/project
+./play-mobilIT/project/target
+./play-mobilIT/target
+./play-mobilIT/tmp
