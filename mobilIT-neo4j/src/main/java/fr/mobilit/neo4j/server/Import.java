@@ -1,9 +1,10 @@
 package fr.mobilit.neo4j.server;
 
+import java.io.File;
 import java.nio.charset.Charset;
-import java.util.Properties;
 
-import javax.ws.rs.GET;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
@@ -24,28 +25,28 @@ public class Import {
         this.db = db;
     }
 
-    @GET
+    @POST
     @Produces(MediaType.TEXT_PLAIN)
     @Path("/osm")
-    public Response osm() {
+    public Response osm(@FormParam("osmFiles") String[] osmFiles) {
         try {
-            Properties properties = new Properties();
-            properties.load(Import.class.getResourceAsStream("/import.properties"));
             OSMImporter importer = new OSMImporter("OSM", new ConsoleListener());
-            int nb = 0;
-            while (properties.getProperty("import.osm.path." + nb) != null) {
-                String OSMFilePath = properties.getProperty("import.osm.path." + nb);
+            for (int i = 0; i < osmFiles.length; i++) {
+                String OSMFilePath = osmFiles[i];
+                File osmFile = new File(OSMFilePath);
+                if (!osmFile.exists()) {
+                    throw new Exception("OSM file " + OSMFilePath + " doesn't found");
+                }
                 long start = System.currentTimeMillis();
                 importer.setCharset(Charset.forName("UTF-8"));
                 importer.importFile(db, OSMFilePath, true, 5000);
                 // Weird hack to force GC on large loads
                 if (System.currentTimeMillis() - start > 300000) {
-                    for (int i = 0; i < 3; i++) {
+                    for (int j = 0; j < 3; j++) {
                         System.gc();
                         Thread.sleep(1000);
                     }
                 }
-                nb++;
             }
             importer.reIndex(db, 1000, true, false);
             return Response.status(Status.OK).build();
