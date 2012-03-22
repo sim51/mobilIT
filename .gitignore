@@ -9,6 +9,11 @@ mobilIT-play/.classpath
 mobilIT-play/.project
 mobilIT-play/.settings/
 
+#IDEA GIT IGNORE
+.idea
+mobilIT-play/.idea
+mobilIT-play/*.iml
+
 #NEO4J PLUGIN GIT IGNORE
 mobilIT-neo4j/target/
 
