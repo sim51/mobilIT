@@ -60,17 +60,19 @@ function filter(){
   mkdir filter
   cd download
   for file in `dir -d *` ; do
+    echo "osmosis --read-xml $file --tag-filter accept-ways highway=* --write-xml ../filter/$file"
     osmosis --read-xml $file --tag-filter accept-ways highway=* --write-xml ../filter/$file
   done
-  rm -rf $WORK/download
 }
 
 function neo4jImport(){
   cd $WORK/filter
+  OSMFILES=""
   for file in `dir -d *` ; do
-    osmFile = "osmFile[]=" + $file
+    OSMFILES=$OSMFILES"osmFile[]=$file&"
   done
-  wget --post-data="$osmFiles" $NEO4J_OSM_IMPORT_URL
+  echo "wget --post-data=$OSMFILES $NEO4J_OSM_IMPORT_URL"
+  wget --post-data="$OSMFILES" $NEO4J_OSM_IMPORT_URL
 }
 
 ###############################################################################
