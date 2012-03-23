@@ -28,7 +28,8 @@ public class Import {
     @POST
     @Produces(MediaType.TEXT_PLAIN)
     @Path("/osm")
-    public Response osm(@FormParam("osmFiles") String[] osmFiles) {
+    public Response osm(@FormParam("files") String files) {
+        String[] osmFiles = files.split("@");
         try {
             OSMImporter importer = new OSMImporter("OSM", new ConsoleListener());
             for (int i = 0; i < osmFiles.length; i++) {

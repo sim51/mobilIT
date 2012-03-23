@@ -25,32 +25,23 @@ WORK=$PWD
 ###############################################################################
 # FUNCTIONS
 ###############################################################################
-function checkPreviousCMD(){
-  if [ $? -ne 0 ]; then
-    echo -e "\033[31m[KO]"
-    tput sgr0
-    exit 3
-  else
-    echo -e "\033[32m[OK]"
-    tput sgr0
-  fi
-  echo
-}
-
 function retrieveOSMFile(){
+  cd $WORK
+  rm -rf download
+  mkdir download
+  cd download
   for j in "${OSM_FILE_URL[@]}"
     do
-      cd $WORK
-      rm -rf download
-      mkdir download
-      cd download
       wget $j
     done
 }
 
 function extract(){
   cd $WORK/download
-  bunzip2 *
+  for file in `dir -d * | grep .bz2` ; do
+    echo "Extract $file"
+    bunzip2 $file
+  done;
   rm -f *.bz2
 }
 
@@ -67,12 +58,18 @@ function filter(){
 
 function neo4jImport(){
   cd $WORK/filter
-  OSMFILES=""
+  OSMFILES="files="
   for file in `dir -d *` ; do
-    OSMFILES=$OSMFILES"osmFile[]=$file&"
+    if [[ $OSMFILES == "files=" ]]
+    then
+      OSMFILES=$OSMFILES"$WORK/filter/$file"
+    else
+      OSMFILES=$OSMFILES"@$WORK/filter/$file"
+    fi
+    echo $OSMFILES
   done
-  echo "wget --post-data=$OSMFILES $NEO4J_OSM_IMPORT_URL"
-  wget --post-data="$OSMFILES" $NEO4J_OSM_IMPORT_URL
+  echo curl --data "$OSMFILES" $NEO4J_OSM_IMPORT_URL
+  curl --data "$OSMFILES" $NEO4J_OSM_IMPORT_URL
 }
 
 ###############################################################################
