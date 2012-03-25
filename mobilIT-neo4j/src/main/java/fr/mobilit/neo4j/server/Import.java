@@ -1,3 +1,21 @@
+/**
+ * This file is part of MobilIT.
+ *
+ * MobilIT is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * MobilIT is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with MobilIT. If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * @See https://github.com/sim51/mobilIT
+ */
 package fr.mobilit.neo4j.server;
 
 import java.io.File;
@@ -16,22 +34,44 @@ import org.neo4j.gis.spatial.ConsoleListener;
 import org.neo4j.gis.spatial.osm.OSMImporter;
 import org.neo4j.graphdb.GraphDatabaseService;
 
+import fr.mobilit.neo4j.server.utils.Constant;
+
+/**
+ * Neo4j REST interface that manage imports.
+ * 
+ * @author bsimard
+ * 
+ */
 @Path("/import")
 public class Import {
 
+    /**
+     * Graph database.
+     */
     private final GraphDatabaseService db;
 
+    /**
+     * Constructor.
+     * 
+     * @param db
+     */
     public Import(@Context GraphDatabaseService db) {
         this.db = db;
     }
 
+    /**
+     * Action to import OSM file into the neo4j spatial database.
+     * 
+     * @param files list of osm file on the FS separate by '@' character.
+     * @return OK or the error.
+     */
     @POST
     @Produces(MediaType.TEXT_PLAIN)
     @Path("/osm")
     public Response osm(@FormParam("files") String files) {
         String[] osmFiles = files.split("@");
         try {
-            OSMImporter importer = new OSMImporter("OSM", new ConsoleListener());
+            OSMImporter importer = new OSMImporter(Constant.LAYER_OSM, new ConsoleListener());
             for (int i = 0; i < osmFiles.length; i++) {
                 String OSMFilePath = osmFiles[i];
                 File osmFile = new File(OSMFilePath);

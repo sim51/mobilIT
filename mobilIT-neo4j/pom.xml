@@ -1,17 +1,72 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>fr.mobilit</groupId>
-	<artifactId>neo4-mobilIT</artifactId>
-	<version>1.0-SNAPSHOT</version>
 
+	<!-- ====================== -->
+	<!-- = Project definition = -->
+	<!-- ====================== -->
+	<groupId>fr.mobilit</groupId>
+	<artifactId>neo4j-mobilIT</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<name>Neo4j MobilIT Plugin</name>
+	<description>Neo4j plugin for MobilIT project</description>
+	<url>http://sim51.github.com/mobilIT</url>
+	<inceptionYear>2012</inceptionYear>
+
+	<!-- =========== -->
+	<!-- = License = -->
+	<!-- =========== -->
+	<licenses>
+		<license>
+			<name>GNU General Public License</name>
+			<url>http://www.gnu.org/licenses/gpl.txt</url>
+		</license>
+	</licenses>
+
+	<!-- ======= -->
+	<!-- = SCM = -->
+	<!-- ======= -->
+	<scm>
+		<url>https://github.com/sim51/mobilIT</url>
+		<connection>scm:git:git://github.com/sim51/mobilIT.git</connection>
+		<developerConnection>scm:git:git+ssh://git@github.com/sim51/mobilIT.git</developerConnection>
+	</scm>
+
+	<!-- ============== -->
+	<!-- = Bugtracker = -->
+	<!-- ============== -->
+	<issueManagement>
+		<system>Github</system>
+		<url>https://github.com/sim51/mobilIT/issues</url>
+	</issueManagement>
+
+	<!-- ================= -->
+	<!-- = Project owner = -->
+	<!-- ================= -->
+	<organization>
+		<name>LogiSima</name>
+		<url>http://www.logisima.com</url>
+	</organization>
+	<developers>
+		<developer>
+			<id>bsimard</id>
+			<name>Benoît SIMARD</name>
+			<email>bsimard@logisima.com</email>
+		</developer>
+	</developers>
+
+	<!-- ====================== -->
+	<!-- = Project properties = -->
+	<!-- ====================== -->
 	<properties>
 		<neo4j.version>1.6.1</neo4j.version>
-		<neo4j.spatial.version>0.8-SNAPSHOT</neo4j.spatial.version>
+		<neo4j.spatial.version>0.7</neo4j.spatial.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
+	<!-- ================ -->
+	<!-- = Dependencies = -->
+	<!-- ================ -->
 	<dependencies>
 		<dependency>
 			<groupId>org.neo4j</groupId>
@@ -62,8 +117,31 @@
 			<version>${neo4j.version}</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.10</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.neo4j.app</groupId>
+			<artifactId>neo4j-server</artifactId>
+			<version>${neo4j.version}</version>
+			<type>test-jar</type>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.neo4j.examples</groupId>
+			<artifactId>neo4j-examples</artifactId>
+			<version>${neo4j.version}</version>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
+	<!-- ========= -->
+	<!-- = Build = -->
+	<!-- ========= -->
 	<build>
 		<plugins>
 			<plugin>
@@ -74,24 +152,6 @@
 					<source>1.6</source>
 					<target>1.6</target>
 				</configuration>
-			</plugin>
-			<plugin>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>get-javadoc-sources</id>
-						<phase>none</phase>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<artifactId>maven-jar-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>attach-docs</id>
-						<phase>none</phase>
-					</execution>
-				</executions>
 			</plugin>
 			<plugin>
 				<artifactId>maven-dependency-plugin</artifactId>
@@ -111,6 +171,9 @@
 		</plugins>
 	</build>
 
+	<!-- ==================== -->
+	<!-- = Maven Repository = -->
+	<!-- ==================== -->
 	<repositories>
 		<repository>
 			<id>maven2-repository.dev.java.net</id>
@@ -126,4 +189,5 @@
 			<url>http://m2.neo4j.org </url>
 		</repository>
 	</repositories>
+
 </project> 
