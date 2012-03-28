@@ -29,5 +29,4 @@ public class Constant {
     public static final String LATITUDE  = "lat";
     public static final String LONGITUDE = "lon";
     public static final String LAYER_OSM = "OSM";
-
 }

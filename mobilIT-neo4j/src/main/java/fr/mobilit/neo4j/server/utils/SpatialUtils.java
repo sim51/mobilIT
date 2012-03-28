@@ -27,19 +27,16 @@ public class SpatialUtils {
         try {
             Coordinate coord = new Coordinate(lat, lon);
             //@formatter:off
-            List<GeoPipeFlow> results;
-            results = GeoPipeline
-                    .startNearestNeighborLatLonSearch(osm, coord, 1.0)
+            List<GeoPipeFlow> results = GeoPipeline
+                    .start(osm)
                     .cqlFilter(
                             "highway ='primary' or " +
                             "highway ='secondary' or " +
                             "highway ='tertiary' or " +
                             "highway ='motorway' or " +
                             "highway ='trunk'")
-                    .sort("OrthodromicDistance")
-                    .getMin("OrthodromicDistance")
-                    .copyDatabaseRecordProperties()
-                    .toList();
+                    .startNearestNeighborSearch(osm, coord, 1.0)
+                    .copyDatabaseRecordProperties().toList();
             //@formatter:on
             if (results.size() > 0) {
                 return results.get(0).getRecord();
