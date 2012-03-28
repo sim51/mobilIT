@@ -12,14 +12,13 @@ import org.neo4j.gis.spatial.Layer;
 import org.neo4j.gis.spatial.indexprovider.LayerNodeIndex;
 import org.neo4j.gis.spatial.indexprovider.SpatialIndexProvider;
 import org.neo4j.gis.spatial.osm.OSMImporter;
+import org.neo4j.gis.spatial.pipes.GeoPipeFlow;
 import org.neo4j.gis.spatial.pipes.GeoPipeline;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.index.IndexHits;
 
-
 import com.vividsolutions.jts.geom.Coordinate;
 
-import fr.mobilit.neo4j.server.Import;
 import fr.mobilit.neo4j.server.exception.MobilITException;
 import fr.mobilit.neo4j.server.util.Neo4jTestCase;
 import fr.mobilit.neo4j.server.utils.Constant;
@@ -28,9 +27,9 @@ public class Neo4jOsmTest extends Neo4jTestCase {
 
     @Before
     public void setUp() throws Exception {
-        super.setUp(true);
-        String files = Thread.currentThread().getContextClassLoader().getResource("osm/nantes.osm").getFile();
-        new Import(this.graphDb()).osm(files);
+        super.setUp(false);
+        // String files = Thread.currentThread().getContextClassLoader().getResource("osm/nantes.osm").getFile();
+        // new Import(this.graphDb()).osm(files);
     }
 
     @Test
@@ -58,13 +57,17 @@ public class Neo4jOsmTest extends Neo4jTestCase {
     @Test
     public void testFindNearestWayWithGeoPipeline() throws MobilITException, CQLException {
         // init
-        Double lat = new Double(-1.557004);
-        Double lon = new Double(47.222265);
+        Double lat = new Double(-1.5551018714904785);
+        Double lon = new Double(47.222570240585576);
         Coordinate coord = new Coordinate(lat, lon);
         // get layers
         Layer osmLayer = this.spatial().getLayer(Constant.LAYER_OSM);
         // query
-        List<Node> results = GeoPipeline.startNearestNeighborLatLonSearch(osmLayer, coord, 1.0).toNodeList();
+        List<GeoPipeFlow> results = GeoPipeline
+                .startNearestNeighborLatLonSearch(osmLayer, coord, 1.0)
+                .cqlFilter(
+                        "highway ='primary' or highway ='secondary' or highway ='tertiary' or highway ='motorway' or highway ='trunk'")
+                .sort("OrthodromicDistance").getMin("OrthodromicDistance").copyDatabaseRecordProperties().toList();
         // check
         assertNotNull(results);
         assertTrue(results.size() > 0);

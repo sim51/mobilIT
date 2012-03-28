@@ -27,12 +27,31 @@ package fr.mobilit.neo4j.server.exception;
 public class MobilITException extends Exception {
 
     /**
+     * SerialUID.
+     */
+    private static final long serialVersionUID = 3022354779664609800L;
+    /**
+     * Code exception.
+     */
+    private Integer           code;
+
+    /**
      * Construct a <code>MobilITException</code> with the specified detail message.
      * 
      * @param msg the detail message
      */
     public MobilITException(String message) {
         super(message);
+    }
+
+    /**
+     * Construct a <code>MobilITException</code> with the specified detail message.
+     * 
+     * @param msg the detail message
+     */
+    public MobilITException(Integer code, String message) {
+        super(message);
+        this.code = code;
     }
 
     /**
@@ -53,4 +72,19 @@ public class MobilITException extends Exception {
     public MobilITException(Throwable cause) {
         super(cause);
     }
+
+    /**
+     * @return the code
+     */
+    public Integer getCode() {
+        return code;
+    }
+
+    /**
+     * @param code the code to set
+     */
+    public void setCode(Integer code) {
+        this.code = code;
+    }
+
 }

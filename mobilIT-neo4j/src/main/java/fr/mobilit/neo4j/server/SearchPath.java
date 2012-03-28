@@ -44,7 +44,7 @@ public class SearchPath {
 
     private final GraphDatabaseService   db;
     private final SpatialDatabaseService spatial;
-    private static Expander              expander;
+    private Expander                     expander;
 
     /**
      * Constructor.
@@ -64,8 +64,8 @@ public class SearchPath {
     public Response car(Double lat1, Double long1, Double lat2, Double long2, Long time) {
         try {
             SpatialUtils service = new SpatialUtils(spatial);
-            Node start = service.findNearestWay(lat1, long1);
-            Node end = service.findNearestWay(lat2, long2);
+            Node start = service.findNearestWay(lat1, long1).getGeomNode();
+            Node end = service.findNearestWay(lat2, long2).getGeomNode();
             CarCostEvaluation eval = new CarCostEvaluation();
             Dijkstra dijkstra = new Dijkstra(expander, eval);
             WeightedPath path = dijkstra.findSinglePath(start, end);
