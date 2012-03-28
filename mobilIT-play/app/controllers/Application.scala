@@ -40,7 +40,7 @@ object Application extends Controller {
 
         //todo find a route between fromLatLong and toLatLong
 
-        Ok("todo")
+        Ok(((from, fromLatLong), (to, toLatLong)).toString())
       }
     )
 
