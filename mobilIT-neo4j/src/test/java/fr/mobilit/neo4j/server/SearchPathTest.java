@@ -6,7 +6,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import util.Neo4jTestCase;
+import fr.mobilit.neo4j.server.util.Neo4jTestCase;
+
 
 public class SearchPathTest extends Neo4jTestCase {
 

@@ -1,4 +1,4 @@
-package util;
+package fr.mobilit.neo4j.server.util;
 
 import java.io.File;
 

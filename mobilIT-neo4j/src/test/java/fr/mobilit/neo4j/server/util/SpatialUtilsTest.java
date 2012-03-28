@@ -1,4 +1,4 @@
-package util;
+package fr.mobilit.neo4j.server.util;
 
 import java.util.List;
 import java.util.Map;

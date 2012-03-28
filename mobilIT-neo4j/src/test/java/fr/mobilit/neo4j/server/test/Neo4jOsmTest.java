@@ -16,12 +16,12 @@ import org.neo4j.gis.spatial.pipes.GeoPipeline;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.index.IndexHits;
 
-import util.Neo4jTestCase;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
 import fr.mobilit.neo4j.server.Import;
 import fr.mobilit.neo4j.server.exception.MobilITException;
+import fr.mobilit.neo4j.server.util.Neo4jTestCase;
 import fr.mobilit.neo4j.server.utils.Constant;
 
 public class Neo4jOsmTest extends Neo4jTestCase {

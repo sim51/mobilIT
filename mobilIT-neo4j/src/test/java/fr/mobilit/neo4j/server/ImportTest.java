@@ -7,7 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.neo4j.gis.spatial.Layer;
 
-import util.Neo4jTestCase;
+import fr.mobilit.neo4j.server.util.Neo4jTestCase;
 import fr.mobilit.neo4j.server.utils.Constant;
 
 public class ImportTest extends Neo4jTestCase {
