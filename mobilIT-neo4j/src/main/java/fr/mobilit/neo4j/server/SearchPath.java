@@ -18,8 +18,6 @@
  */
 package fr.mobilit.neo4j.server;
 
-import java.util.List;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -29,21 +27,17 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.neo4j.gis.spatial.SpatialDatabaseService;
-import org.neo4j.gis.spatial.osm.OSMGeometryEncoder;
-import org.neo4j.gis.spatial.osm.OSMLayer;
-import org.neo4j.gis.spatial.pipes.GeoPipeFlow;
-import org.neo4j.gis.spatial.pipes.osm.OSMGeoPipeline;
+import org.neo4j.gis.spatial.osm.OSMRelation;
 import org.neo4j.graphalgo.WeightedPath;
 import org.neo4j.graphalgo.impl.path.Dijkstra;
+import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Expander;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
+import org.neo4j.kernel.Traversal;
 
-import com.vividsolutions.jts.geom.Coordinate;
-
-import fr.mobilit.neo4j.server.exception.MobilITException;
 import fr.mobilit.neo4j.server.shortestpath.costEvaluator.CarCostEvaluation;
-import fr.mobilit.neo4j.server.utils.Constant;
+import fr.mobilit.neo4j.server.utils.SpatialUtils;
 
 @Path("/search")
 public class SearchPath {
@@ -51,7 +45,6 @@ public class SearchPath {
     private final GraphDatabaseService   db;
     private final SpatialDatabaseService spatial;
     private static Expander              expander;
-    private OSMLayer                     osm;
 
     /**
      * Constructor.
@@ -61,7 +54,8 @@ public class SearchPath {
     public SearchPath(@Context GraphDatabaseService db) {
         this.db = db;
         this.spatial = new SpatialDatabaseService(db);
-        this.osm = (OSMLayer) spatial.getOrCreateLayer(Constant.LAYER_OSM, OSMGeometryEncoder.class, OSMLayer.class);
+        this.expander = expander = Traversal.expanderForTypes(OSMRelation.WAYS, Direction.OUTGOING, OSMRelation.WAYS,
+                Direction.BOTH);
     }
 
     @GET
@@ -69,13 +63,14 @@ public class SearchPath {
     @Path("/car")
     public Response car(Double lat1, Double long1, Double lat2, Double long2, Long time) {
         try {
-            Node start = setupStart(lat1, long1);
-            Node end = setupEnd(lat2, long2);
+            SpatialUtils service = new SpatialUtils(spatial);
+            Node start = service.findNearestWay(lat1, long1);
+            Node end = service.findNearestWay(lat2, long2);
             CarCostEvaluation eval = new CarCostEvaluation();
             Dijkstra dijkstra = new Dijkstra(expander, eval);
             WeightedPath path = dijkstra.findSinglePath(start, end);
             return Response.status(Status.OK).entity(path).build();
-        } catch (MobilITException e) {
+        } catch (Exception e) {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage() + " :" + e.getCause()).build();
         }
     }
@@ -101,25 +96,4 @@ public class SearchPath {
         return Response.status(Status.OK).build();
     }
 
-    private Node setupStart(Double lat, Double lon) throws MobilITException {
-        return getNode(lat, lon);
-    }
-
-    private Node setupEnd(Double lat, Double lon) throws MobilITException {
-        return getNode(lat, lon);
-    }
-
-    private Node getNode(Double lat, Double lon) throws MobilITException {
-        Coordinate myPosition = new Coordinate(lat, lon);
-        List<GeoPipeFlow> results = OSMGeoPipeline.startNearestNeighborLatLonSearch(osm, myPosition, 100)
-                .sort("OrthodromicDistance").toList();
-        if (results.size() > 0) {
-            GeoPipeFlow node = results.get(0);
-            Node startNode = db.getNodeById(node.getRecord().getNodeId());
-            return startNode;
-        }
-        else {
-            throw new MobilITException("Start Node not found");
-        }
-    }
 }

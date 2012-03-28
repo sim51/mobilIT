@@ -14,7 +14,7 @@ public class SearchPathTest extends Neo4jTestCase {
 
     @Before
     public void setUp() throws Exception {
-        super.setUp(false, false, false);
+        super.setUp(false);
         this.searchPlugin = new SearchPath(this.graphDb());
     }
 

@@ -60,7 +60,7 @@
 	<!-- ====================== -->
 	<properties>
 		<neo4j.version>1.6.1</neo4j.version>
-		<neo4j.spatial.version>0.7</neo4j.spatial.version>
+		<neo4j.spatial.version>0.8-SNAPSHOT</neo4j.spatial.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 

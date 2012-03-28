@@ -30,7 +30,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.neo4j.gis.spatial.ConsoleListener;
 import org.neo4j.gis.spatial.osm.OSMImporter;
 import org.neo4j.graphdb.GraphDatabaseService;
 
@@ -71,7 +70,7 @@ public class Import {
     public Response osm(@FormParam("files") String files) {
         String[] osmFiles = files.split("@");
         try {
-            OSMImporter importer = new OSMImporter(Constant.LAYER_OSM, new ConsoleListener());
+            OSMImporter importer = new OSMImporter(Constant.LAYER_OSM);
             for (int i = 0; i < osmFiles.length; i++) {
                 String OSMFilePath = osmFiles[i];
                 File osmFile = new File(OSMFilePath);
@@ -89,7 +88,7 @@ public class Import {
                     }
                 }
             }
-            importer.reIndex(db, 1000, true, false);
+            importer.reIndex(db, 1000, true, true);
             return Response.status(Status.OK).build();
         } catch (Exception e) {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage() + " :" + e.getCause()).build();

@@ -28,8 +28,8 @@ public abstract class Neo4jTestCase extends TestCase {
     private BatchInserter          batchInserter;
 
     @Before
-    protected void setUp() throws Exception {
-        setUp(true, false, false);
+    protected void setUp(boolean resetDb) throws Exception {
+        setUp(resetDb, false, false);
         spatial = new SpatialDatabaseService(graphDb);
     }
 
