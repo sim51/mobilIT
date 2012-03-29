@@ -12,6 +12,7 @@ import org.neo4j.gis.spatial.pipes.GeoPipeline;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
+import fr.mobilit.neo4j.server.Import;
 import fr.mobilit.neo4j.server.exception.MobilITException;
 import fr.mobilit.neo4j.server.util.Neo4jTestCase;
 import fr.mobilit.neo4j.server.utils.Constant;
@@ -20,9 +21,9 @@ public class Neo4jOsmTest extends Neo4jTestCase {
 
     @Before
     public void setUp() throws Exception {
-        super.setUp(false);
-        // String files = Thread.currentThread().getContextClassLoader().getResource("osm/nantes.osm").getFile();
-        // new Import(this.graphDb()).osm(files);
+        super.setUp(true);
+        String files = Thread.currentThread().getContextClassLoader().getResource("osm/nantes.osm").getFile();
+        new Import(this.graphDb()).osm(files);
     }
 
     // @Test

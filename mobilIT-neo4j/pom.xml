@@ -124,13 +124,6 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.neo4j.app</groupId>
-			<artifactId>neo4j-server</artifactId>
-			<version>${neo4j.version}</version>
-			<type>test-jar</type>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.neo4j.examples</groupId>
 			<artifactId>neo4j-examples</artifactId>
 			<version>${neo4j.version}</version>

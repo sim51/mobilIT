@@ -8,14 +8,15 @@ import org.junit.Test;
 
 import fr.mobilit.neo4j.server.util.Neo4jTestCase;
 
-
 public class SearchPathTest extends Neo4jTestCase {
 
     private SearchPath searchPlugin;
 
     @Before
     public void setUp() throws Exception {
-        super.setUp(false);
+        super.setUp(true);
+        String files = Thread.currentThread().getContextClassLoader().getResource("osm/nantes.osm").getFile();
+        new Import(this.graphDb()).osm(files);
         this.searchPlugin = new SearchPath(this.graphDb());
     }
 
