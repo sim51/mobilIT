@@ -27,9 +27,11 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.neo4j.gis.spatial.SpatialDatabaseService;
+import org.neo4j.gis.spatial.SpatialRelationshipTypes;
 import org.neo4j.gis.spatial.osm.OSMRelation;
-import org.neo4j.graphalgo.WeightedPath;
-import org.neo4j.graphalgo.impl.path.Dijkstra;
+import org.neo4j.graphalgo.impl.shortestpath.Dijkstra;
+import org.neo4j.graphalgo.impl.util.DoubleAdder;
+import org.neo4j.graphalgo.impl.util.DoubleComparator;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Expander;
 import org.neo4j.graphdb.GraphDatabaseService;
@@ -64,12 +66,13 @@ public class SearchPath {
     public Response car(Double lat1, Double long1, Double lat2, Double long2, Long time) {
         try {
             SpatialUtils service = new SpatialUtils(spatial);
-            Node start = service.findNearestWay(lat1, long1).getGeomNode();
-            Node end = service.findNearestWay(lat2, long2).getGeomNode();
+            Node start = service.findNearestWay(lat1, long1).getNode();
+            Node end = service.findNearestWay(lat2, long2).getNode();
             CarCostEvaluation eval = new CarCostEvaluation();
-            Dijkstra dijkstra = new Dijkstra(expander, eval);
-            WeightedPath path = dijkstra.findSinglePath(start, end);
-            return Response.status(Status.OK).entity(path).build();
+            Dijkstra<Double> sp = new Dijkstra<Double>(0.0, start, end, eval, new DoubleAdder(),
+                    new DoubleComparator(), Direction.BOTH, SpatialRelationshipTypes.NEXT_GEOM);
+            sp.calculate();
+            return Response.status(Status.OK).entity(sp.getPath()).build();
         } catch (Exception e) {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage() + " :" + e.getCause()).build();
         }

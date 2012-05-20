@@ -6,6 +6,8 @@ import org.geotools.filter.text.cql2.CQLException;
 import org.neo4j.gis.spatial.Layer;
 import org.neo4j.gis.spatial.SpatialDatabaseRecord;
 import org.neo4j.gis.spatial.SpatialDatabaseService;
+import org.neo4j.gis.spatial.osm.OSMDataset;
+import org.neo4j.gis.spatial.osm.OSMDataset.Way;
 import org.neo4j.gis.spatial.pipes.GeoPipeFlow;
 import org.neo4j.gis.spatial.pipes.GeoPipeline;
 
@@ -23,23 +25,33 @@ public class SpatialUtils {
         this.osm = spatial.getLayer(Constant.LAYER_OSM);
     }
 
-    public SpatialDatabaseRecord findNearestWay(Double lat, Double lon) throws MobilITException {
+    public Way findNearestWay(Double lat, Double lon) throws MobilITException {
         try {
             Coordinate coord = new Coordinate(lat, lon);
             //@formatter:off
             List<GeoPipeFlow> results = GeoPipeline
-                    .start(osm)
+                    .startNearestNeighborLatLonSearch(osm, coord, 0.5)
                     .cqlFilter(
                             "highway ='primary' or " +
                             "highway ='secondary' or " +
                             "highway ='tertiary' or " +
                             "highway ='motorway' or " +
                             "highway ='trunk'")
-                    .startNearestNeighborSearch(osm, coord, 1.0)
-                    .copyDatabaseRecordProperties().toList();
-            //@formatter:on
+                    .sort("OrthodromicDistance")
+                    .toList();
+          //@formatter:on
             if (results.size() > 0) {
-                return results.get(0).getRecord();
+                int i = 0;
+                Way way = null;
+                while (way == null & i < results.size()) {
+                    SpatialDatabaseRecord spatialResult = results.get(i).getRecord();
+                    Way tempWay = new SpatialUtils(this.spatial).getOSMWayFromGeomNode(spatialResult);
+                    if (tempWay != null && tempWay.getNode().getProperty("name", null) != null) {
+                        way = tempWay;
+                    }
+                    i++;
+                }
+                return way;
             }
             else {
                 throw new MobilITException("Start Node not found");
@@ -48,5 +60,15 @@ public class SpatialUtils {
             throw new MobilITException(e);
         }
 
+    }
+
+    /**
+     * Method to get an OSM way from a GeomNode. The way contains all OSM attributs.
+     * 
+     * @param geomNode
+     * @return
+     */
+    public Way getOSMWayFromGeomNode(SpatialDatabaseRecord spatialResult) {
+        return ((OSMDataset) osm.getDataset()).getWayFrom(spatialResult.getGeomNode());
     }
 }
