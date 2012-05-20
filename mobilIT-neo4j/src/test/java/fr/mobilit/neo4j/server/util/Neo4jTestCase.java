@@ -139,8 +139,7 @@ public abstract class Neo4jTestCase extends TestCase {
     }
 
     protected long countNodes(Class<?> cls) {
-        return ((EmbeddedGraphDatabase) graphDb).getConfig().getGraphDbModule().getNodeManager()
-                .getNumberOfIdsInUse(cls);
+        return ((EmbeddedGraphDatabase) graphDb).getNodeManager().getNumberOfIdsInUse(cls);
     }
 
     protected void printDatabaseStats() {
