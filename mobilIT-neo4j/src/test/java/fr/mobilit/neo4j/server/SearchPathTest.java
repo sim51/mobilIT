@@ -14,20 +14,20 @@ public class SearchPathTest extends Neo4jTestCase {
 
     @Before
     public void setUp() throws Exception {
-        super.setUp(true);
-        String files = Thread.currentThread().getContextClassLoader().getResource("osm/nantes.osm").getFile();
-        new Import(this.graphDb()).osm(files);
+        super.setUp(false);
+        // String files = Thread.currentThread().getContextClassLoader().getResource("osm/nantes.osm").getFile();
+        // new Import(this.graphDb()).osm(files);
         this.searchPlugin = new SearchPath(this.graphDb());
     }
 
     @Test
     public void testCarPath() {
-        Double lat1 = new Double(-1.557004);
-        Double long1 = new Double(47.222265);
-        Double lat2 = new Double(-1.55341);
-        Double long2 = new Double(47.216924);
+        Double lat1 = new Double(-1.5569311380386353);
+        Double lon1 = new Double(47.22245365625265);
+        Double lat2 = new Double(-1.5539807081222534);
+        Double lon2 = new Double(47.21921469525527);
         Long time = System.currentTimeMillis();
-        Response response = searchPlugin.car(lat1, long1, lat2, long2, time);
+        Response response = searchPlugin.car(lat1, lon1, lat2, lon2, time);
         assertEquals(200, response.getStatus());
     }
 
