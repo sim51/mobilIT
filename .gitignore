@@ -13,6 +13,7 @@ mobilIT-play/.settings/
 .idea
 mobilIT-play/.idea
 mobilIT-play/*.iml
+mobilIT-neo4j/neo4j-mobilIT.iml
 
 #NEO4J PLUGIN GIT IGNORE
 mobilIT-neo4j/target/
