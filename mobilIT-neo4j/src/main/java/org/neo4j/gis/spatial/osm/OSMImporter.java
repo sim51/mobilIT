@@ -161,6 +161,10 @@ public class OSMImporter {
         stats.dumpGeomStats();
     }
 
+    public void importFile(GraphDatabaseService database, String dataset) throws IOException, XMLStreamException {
+        importFile(database, dataset, false, 5000);
+    }
+
     public void importFile(GraphDatabaseService database, String dataset, int txInterval) throws IOException,
             XMLStreamException {
         importFile(database, dataset, false, txInterval);
@@ -305,7 +309,7 @@ public class OSMImporter {
                             osmWriter.createOSMWay(wayProperties, wayNodes, currentNodeTags);
                         }
                         else if (currentXMLTags.toString().equals("[osm, relation]")) {
-                            osmWriter.createOSMRelation(relationProperties, relationMembers, currentNodeTags);
+                            // osmWriter.createOSMRelation(relationProperties, relationMembers, currentNodeTags);
                         }
                         depth--;
                         currentXMLTags.remove(depth);

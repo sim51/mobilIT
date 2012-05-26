@@ -3,6 +3,7 @@ package org.neo4j.gis.spatial.osm.writer;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -16,6 +17,8 @@ import org.neo4j.gis.spatial.osm.utils.StatsManager;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.RelationshipType;
+
+import fr.mobilit.neo4j.server.utils.MobilITRelation;
 
 public abstract class OSMWriter<T> {
 
@@ -63,6 +66,14 @@ public abstract class OSMWriter<T> {
 
     public abstract void addNodeGeometry(T node, int gtype, Envelope bbox, int vertices);
 
+    /**
+     * Create and index node <code>name</code>
+     * 
+     * @param name
+     * @param properties
+     * @param indexKey
+     * @return
+     */
     public abstract T addNode(String name, Map<String, Object> properties, String indexKey);
 
     public abstract void createRelationship(T from, T to, RelationshipType relType,
@@ -248,9 +259,6 @@ public abstract class OSMWriter<T> {
             wayProperties.put("name", name);
         }
         String way_osm_id = (String) wayProperties.get("way_osm_id");
-        if (way_osm_id.equals("28338132")) {
-            System.out.println("Debug way: " + way_osm_id);
-        }
         T changesetNode = getChangesetNode(wayProperties);
         T way = addNode(osmImporter.INDEX_NAME_WAY, wayProperties, "way_osm_id");
         createRelationship(way, changesetNode, OSMRelation.CHANGESET);
@@ -261,17 +269,13 @@ public abstract class OSMWriter<T> {
             createRelationship(prev_way, way, OSMRelation.NEXT);
         }
         prev_way = way;
-        addNodeTags(way, wayTags, "way");
+        // addNodeTags(way, wayTags, "way");
         Envelope bbox = new Envelope();
         T firstNode = null;
         T prevNode = null;
-        T prevProxy = null;
         Map<String, Object> prevProps = null;
         LinkedHashMap<String, Object> relProps = new LinkedHashMap<String, Object>();
-        HashMap<String, Object> directionProps = new HashMap<String, Object>();
-        directionProps.put("oneway", true);
         for (long nd_ref : wayNodes) {
-            // long pointNode = batchIndexService.getSingleNode("node_osm_id", nd_ref);
             T pointNode = getOSMNode(nd_ref, changesetNode);
             if (pointNode == null) {
                 /*
@@ -280,19 +284,18 @@ public abstract class OSMWriter<T> {
                 missingNode(nd_ref);
                 continue;
             }
-            T proxyNode = createProxyNode();
             if (firstNode == null) {
                 firstNode = pointNode;
             }
             if (prevNode == pointNode) {
                 continue;
             }
-            createRelationship(proxyNode, pointNode, OSMRelation.NODE, null);
+            // createRelationship(proxyNode, pointNode, OSMRelation.NODE, null);
             Map<String, Object> nodeProps = getNodeProperties(pointNode);
             double[] location = new double[] { (Double) nodeProps.get("lon"), (Double) nodeProps.get("lat") };
             bbox.expandToInclude(location[0], location[1]);
-            if (prevProxy == null) {
-                createRelationship(way, proxyNode, OSMRelation.FIRST_NODE);
+            if (prevNode == null) {
+                createRelationship(way, firstNode, OSMRelation.FIRST_NODE);
             }
             else {
                 relProps.clear();
@@ -300,24 +303,31 @@ public abstract class OSMWriter<T> {
 
                 double length = osmImporter.distance(prevLoc[0], prevLoc[1], location[0], location[1]);
                 relProps.put("length", length);
+                Iterator<String> wayTagPropIter = wayTags.keySet().iterator();
+                while (wayTagPropIter.hasNext()) {
+                    String key = wayTagPropIter.next();
+                    relProps.put(key, wayTags.get(key));
+                }
+                relProps.remove("oneway");
+                relProps.put("oneway", direction.toString());
 
                 // We default to bi-directional (and don't store direction in the
                 // way node), but if it is one-way we mark it as such, and define
                 // the direction using the relationship direction
                 if (direction == RoadDirection.BACKWARD) {
-                    createRelationship(proxyNode, prevProxy, OSMRelation.NEXT, relProps);
+                    createRelationship(pointNode, prevNode, MobilITRelation.LINKED, relProps);
                 }
                 else {
-                    createRelationship(prevProxy, proxyNode, OSMRelation.NEXT, relProps);
+                    createRelationship(prevNode, pointNode, MobilITRelation.LINKED, relProps);
                 }
             }
             prevNode = pointNode;
-            prevProxy = proxyNode;
             prevProps = nodeProps;
         }
-        // if (prevNode > 0) {
-        // batchGraphDb.createRelationship(way, prevNode, OSMRelation.LAST_NODE, null);
-        // }
+        wayTags.clear();
+        if (prevNode != null) {
+            createRelationship(way, prevNode, OSMRelation.LAST_NODE);
+        }
         if (firstNode != null && prevNode == firstNode) {
             geometry = Constants.GTYPE_POLYGON;
         }
