@@ -15,8 +15,8 @@ public class SearchPathTest extends Neo4jTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp(false);
-        // String files = Thread.currentThread().getContextClassLoader().getResource("osm/nantes.osm").getFile();
-        // new Import(this.graphDb()).osm(files);
+        String files = Thread.currentThread().getContextClassLoader().getResource("osm/nantes.osm").getFile();
+        new Import(this.graphDb()).osm(files);
         this.searchPlugin = new SearchPath(this.graphDb());
     }
 

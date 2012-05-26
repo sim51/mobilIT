@@ -52,7 +52,7 @@ function filter(){
   cd download
   for file in `dir -d *` ; do
     echo "osmosis --read-xml $file --tag-filter accept-ways highway=* --write-xml ../filter/$file"
-    osmosis --read-xml $file --tag-filter accept-ways highway=* --write-xml ../filter/$file
+    osmosis --read-xml $file --tf accept-ways highway=* --tf reject-relations --tf reject-ways building=yes --write-xml ../filter/$file
   done
 }
 
