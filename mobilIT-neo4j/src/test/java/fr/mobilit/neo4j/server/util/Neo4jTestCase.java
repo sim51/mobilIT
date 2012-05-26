@@ -12,8 +12,6 @@ import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.kernel.EmbeddedGraphDatabase;
-import org.neo4j.kernel.impl.batchinsert.BatchInserter;
-import org.neo4j.kernel.impl.batchinsert.BatchInserterImpl;
 import org.neo4j.kernel.impl.nioneo.store.PropertyStore;
 
 /**
@@ -25,7 +23,6 @@ public abstract class Neo4jTestCase extends TestCase {
     private GraphDatabaseService   graphDb;
     private SpatialDatabaseService spatial;
     private Transaction            tx;
-    private BatchInserter          batchInserter;
 
     @Before
     protected void setUp(boolean resetDb) throws Exception {
@@ -65,18 +62,11 @@ public abstract class Neo4jTestCase extends TestCase {
         if (graphDb != null) {
             graphDb.shutdown(); // shuts down batchInserter also, if this was made from that
             graphDb = null;
-            batchInserter = null;
         }
         if (deleteDb) {
             deleteDatabase();
         }
-        if (useBatchInserter) {
-            batchInserter = new BatchInserterImpl(dbPath.getAbsolutePath());
-            graphDb = batchInserter.getGraphDbService();
-        }
-        else {
-            graphDb = new EmbeddedGraphDatabase(dbPath.getAbsolutePath());
-        }
+        graphDb = new EmbeddedGraphDatabase(dbPath.getAbsolutePath());
         if (autoTx) {
             // with the batch inserter the tx is a dummy that simply succeeds all the time
             tx = graphDb.beginTx();
@@ -139,8 +129,7 @@ public abstract class Neo4jTestCase extends TestCase {
     }
 
     protected long countNodes(Class<?> cls) {
-        return ((EmbeddedGraphDatabase) graphDb).getConfig().getGraphDbModule().getNodeManager()
-                .getNumberOfIdsInUse(cls);
+        return ((EmbeddedGraphDatabase) graphDb).getNodeManager().getNumberOfIdsInUse(cls);
     }
 
     protected void printDatabaseStats() {
@@ -174,14 +163,6 @@ public abstract class Neo4jTestCase extends TestCase {
 
     protected SpatialDatabaseService spatial() {
         return spatial;
-    }
-
-    protected BatchInserter getBatchInserter() {
-        return batchInserter;
-    }
-
-    protected boolean isUsingBatchInserter() {
-        return batchInserter != null;
     }
 
 }
