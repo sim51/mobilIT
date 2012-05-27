@@ -1,0 +1,13 @@
+<mobilIT>
+    <cost>$cost</cost>
+    <path>
+        #foreach( $relation in $path )
+            #set($name = $Utils.getRoadName($relation))
+            #set($length = $Utils.getRoadLength($relation))
+            <step>
+                <name>$name</name>
+                <length>$length</length>
+            </step>
+        #end
+    </path>
+</mobilIT>

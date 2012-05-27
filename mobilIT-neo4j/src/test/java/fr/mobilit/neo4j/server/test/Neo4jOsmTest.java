@@ -49,8 +49,7 @@ public class Neo4jOsmTest extends Neo4jTestCase {
                 .sort("OrthodromicDistance")
                 .toList();
         //@formatter:on
-        Long endTime = System.currentTimeMillis();
-        System.out.println("nearest way found in " + (endTime - startTime) / 1000 + "s");
+
         // check
         assertNotNull(results);
         assertTrue(results.size() > 0);
@@ -70,6 +69,8 @@ public class Neo4jOsmTest extends Neo4jTestCase {
             }
             i++;
         }
+        Long endTime = System.currentTimeMillis();
+        System.out.println("nearest way found in " + (endTime - startTime) + "ms");
         assertEquals("Rue Saint Stanislas", nearestRoad.getProperty("name"));
     }
 

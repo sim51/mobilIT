@@ -22,11 +22,32 @@ import org.neo4j.graphalgo.CostEvaluator;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Relationship;
 
+import fr.mobilit.neo4j.server.utils.Constant;
+
 public class CarCostEvaluation implements CostEvaluator<Double> {
 
     @Override
     public Double getCost(Relationship relationship, Direction direction) {
-        return new Double(1);
+        // Boolean isMotor = false;
+        // if (relationship.getProperty("motor_vehicule", null).equals("yes")) {
+        // isMotor = true;
+        // }
+        // Boolean isGoodWay = false;
+        // String oneway = (String) relationship.getProperty("oneway", null);
+        // if (oneway.equals("BOTH") || (direction.equals(Direction.OUTGOING) && oneway.equals("FORWARD"))
+        // || (direction.equals(Direction.INCOMING) && oneway.equals("BACKWARD"))) {
+        // isGoodWay = true;
+        // }
+        // if (isMotor && isGoodWay) {
+        // Double length = (Double) relationship.getProperty("length", Constant.INFINY);
+        // Integer speed = (Integer) relationship.getProperty("maxspeed", Constant.DEFAULT_SPEED);
+        // return (length / 1000) / speed;
+        // }
+        // else {
+        // return Constant.INFINY;
+        // }
+        Double length = Double.valueOf("" + relationship.getProperty("length", Constant.INFINY));
+        Integer speed = Integer.valueOf("" + relationship.getProperty("maxspeed", Constant.DEFAULT_SPEED));
+        return (length / 1000) / speed;
     }
-
 }

@@ -26,8 +26,9 @@ package fr.mobilit.neo4j.server.utils;
  */
 public class Constant {
 
-    public static final String LATITUDE              = "lat";
-    public static final String LONGITUDE             = "lon";
-    public static final String LAYER_OSM             = "OSM";
-    public static final String LAYER_CAR_HIGHWAY_OSM = "car-highway";
+    public static final String  LATITUDE      = "lat";
+    public static final String  LONGITUDE     = "lon";
+    public static final String  LAYER_OSM     = "OSM";
+    public static final Integer DEFAULT_SPEED = 50;
+    public static final Double  INFINY        = new Double(99999);
 }
