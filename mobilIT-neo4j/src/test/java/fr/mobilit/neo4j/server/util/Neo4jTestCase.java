@@ -4,8 +4,6 @@ import java.io.File;
 
 import junit.framework.TestCase;
 
-import org.junit.After;
-import org.junit.Before;
 import org.neo4j.gis.spatial.SpatialDatabaseService;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
@@ -24,7 +22,6 @@ public abstract class Neo4jTestCase extends TestCase {
     private SpatialDatabaseService spatial;
     private Transaction            tx;
 
-    @Before
     protected void setUp(boolean resetDb) throws Exception {
         setUp(resetDb, false, false);
         spatial = new SpatialDatabaseService(graphDb);
@@ -74,7 +71,6 @@ public abstract class Neo4jTestCase extends TestCase {
     }
 
     @Override
-    @After
     protected void tearDown() throws Exception {
         if (tx != null) {
             tx.success();

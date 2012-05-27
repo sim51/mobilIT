@@ -30,7 +30,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.neo4j.gis.spatial.Constants;
 import org.neo4j.gis.spatial.SpatialDatabaseService;
 import org.neo4j.gis.spatial.osm.OSMImporter;
 import org.neo4j.gis.spatial.osm.OSMLayer;
@@ -103,14 +102,14 @@ public class Import {
             // create layer
             OSMLayer osmLayer = (OSMLayer) this.spatial.getLayer(Constant.LAYER_OSM);
             //@formatter:off
-            osmLayer.addLayerConfig(Constant.LAYER_CAR_HIGHWAY_OSM, 
-                                    Constants.GTYPE_LINESTRING,  
-                                    "highway ='primary' or " +
-                                    "highway ='secondary' or " +
-                                    "highway ='tertiary' or " +
-                                    "highway ='motorway' or " +
-                                    "highway ='trunk' and " +
-                                    "geometryType(the_geom) = 'LineString'");
+//            osmLayer.addLayerConfig(Constant.LAYER_CAR_HIGHWAY_OSM, 
+//                                    Constants.GTYPE_LINESTRING,  
+//                                    "highway ='primary' or " +
+//                                    "highway ='secondary' or " +
+//                                    "highway ='tertiary' or " +
+//                                    "highway ='motorway' or " +
+//                                    "highway ='trunk' and " +
+//                                    "geometryType(the_geom) = 'LineString'");
             //@formatter:on
             return Response.status(Status.OK).build();
         } catch (Exception e) {

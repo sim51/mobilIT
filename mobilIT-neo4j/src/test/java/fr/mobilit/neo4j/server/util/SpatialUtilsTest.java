@@ -4,7 +4,9 @@ import org.geotools.filter.text.cql2.CQLException;
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.neo4j.gis.spatial.osm.OSMDataset.Way;
+import org.neo4j.graphdb.DynamicRelationshipType;
+import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.Relationship;
 
 import fr.mobilit.neo4j.server.Import;
 import fr.mobilit.neo4j.server.exception.MobilITException;
@@ -24,11 +26,16 @@ public class SpatialUtilsTest extends Neo4jTestCase {
         Double lat = new Double(-1.5569311380386353);
         Double lon = new Double(47.22245365625265);
         Long startTime = System.currentTimeMillis();
-        Way way = new SpatialUtils(this.spatial()).findNearestWay(lat, lon);
+        Node node = new SpatialUtils(this.spatial()).findNearestWay(lat, lon);
         Long endTime = System.currentTimeMillis();
         System.out.println("nearest way found in " + (endTime - startTime) / 1000 + "s");
-        assertNotNull(way);
-        assertEquals("Rue Paul Bellamy", way.getNode().getProperty("name"));
+        assertNotNull(node);
+        Relationship nearestRoad = null;
+        for (Relationship relation : node.getRelationships(DynamicRelationshipType.withName("LINKED"))) {
+            if (relation.getProperty("name", null) != null)
+                nearestRoad = relation;
+        }
+        assertEquals("Rue Saint Stanislas", nearestRoad.getProperty("name"));
     }
 
     @After

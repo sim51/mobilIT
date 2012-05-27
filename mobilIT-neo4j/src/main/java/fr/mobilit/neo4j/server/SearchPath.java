@@ -27,7 +27,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.neo4j.gis.spatial.SpatialDatabaseService;
-import org.neo4j.gis.spatial.SpatialRelationshipTypes;
 import org.neo4j.gis.spatial.osm.OSMRelation;
 import org.neo4j.graphalgo.impl.shortestpath.Dijkstra;
 import org.neo4j.graphalgo.impl.util.DoubleAdder;
@@ -39,6 +38,7 @@ import org.neo4j.graphdb.Node;
 import org.neo4j.kernel.Traversal;
 
 import fr.mobilit.neo4j.server.shortestpath.costEvaluator.CarCostEvaluation;
+import fr.mobilit.neo4j.server.utils.MobilITRelation;
 import fr.mobilit.neo4j.server.utils.SpatialUtils;
 
 @Path("/search")
@@ -66,11 +66,11 @@ public class SearchPath {
     public Response car(Double lat1, Double long1, Double lat2, Double long2, Long time) {
         try {
             SpatialUtils service = new SpatialUtils(spatial);
-            Node start = service.findNearestWay(lat1, long1).getNode();
-            Node end = service.findNearestWay(lat2, long2).getNode();
+            Node start = service.findNearestWay(lat1, long1);
+            Node end = service.findNearestWay(lat2, long2);
             CarCostEvaluation eval = new CarCostEvaluation();
             Dijkstra<Double> sp = new Dijkstra<Double>(0.0, start, end, eval, new DoubleAdder(),
-                    new DoubleComparator(), Direction.BOTH, SpatialRelationshipTypes.NEXT_GEOM);
+                    new DoubleComparator(), Direction.BOTH, MobilITRelation.LINKED);
             sp.calculate();
             return Response.status(Status.OK).entity(sp.getPath()).build();
         } catch (Exception e) {
