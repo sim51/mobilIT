@@ -101,16 +101,6 @@ public class Import {
             importer.reIndex(db, 1000, true, true);
             // create layer
             OSMLayer osmLayer = (OSMLayer) this.spatial.getLayer(Constant.LAYER_OSM);
-            //@formatter:off
-//            osmLayer.addLayerConfig(Constant.LAYER_CAR_HIGHWAY_OSM, 
-//                                    Constants.GTYPE_LINESTRING,  
-//                                    "highway ='primary' or " +
-//                                    "highway ='secondary' or " +
-//                                    "highway ='tertiary' or " +
-//                                    "highway ='motorway' or " +
-//                                    "highway ='trunk' and " +
-//                                    "geometryType(the_geom) = 'LineString'");
-            //@formatter:on
             return Response.status(Status.OK).build();
         } catch (Exception e) {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage() + " :" + e.getCause()).build();

@@ -61,6 +61,8 @@
 	<properties>
 		<neo4j.version>1.7</neo4j.version>
 		<neo4j.spatial.version>0.8</neo4j.spatial.version>
+		<velocity.version>1.7</velocity.version>
+		<httpclient.version>3.1</httpclient.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
@@ -120,7 +122,12 @@
 		<dependency>
 			<groupId>org.apache.velocity</groupId>
 			<artifactId>velocity</artifactId>
-			<version>1.7</version>
+			<version>${velocity.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-httpclient</groupId>
+			<artifactId>commons-httpclient</artifactId>
+			<version>${httpclient.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>

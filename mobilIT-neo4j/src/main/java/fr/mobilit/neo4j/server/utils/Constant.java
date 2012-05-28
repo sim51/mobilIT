@@ -26,11 +26,19 @@ package fr.mobilit.neo4j.server.utils;
  */
 public class Constant {
 
+    // General constante
     public static final String  LATITUDE                 = "lat";
     public static final String  LONGITUDE                = "lon";
     public static final String  LAYER_OSM                = "OSM";
+
+    // default value for cost comparator
     public static final Integer DEFAULT_SPEED            = 50;
     public static final Integer DEFAULT_CYCLE_SPEED      = 18;
     public static final Integer DEFAULT_PEDESTRIAN_SPEED = 5;
     public static final Double  INFINY                   = new Double(99999);
+
+    // constant for cycle service
+    public static final String  CYCLE_FREE               = "free";
+    public static final String  CYCLE_AVAIBLE            = "avaible";
+    public static final String  CYCLE_TOTAL              = "total";
 }
