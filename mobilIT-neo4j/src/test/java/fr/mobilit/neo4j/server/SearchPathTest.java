@@ -27,7 +27,7 @@ public class SearchPathTest extends Neo4jTestCase {
         Double lat2 = new Double(-1.5539807081222534);
         Double lon2 = new Double(47.21921469525527);
         Long time = System.currentTimeMillis();
-        Response response = searchPlugin.car(lat1, lon1, lat2, lon2, time);
+        Response response = searchPlugin.car(lat1, lon1, lat2, lon2);
         assertEquals(200, response.getStatus());
     }
 

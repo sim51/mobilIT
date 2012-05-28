@@ -22,11 +22,15 @@ import org.neo4j.graphalgo.CostEvaluator;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Relationship;
 
-public class PublicTransportCostEvaluation implements CostEvaluator<Double> {
+import fr.mobilit.neo4j.server.utils.Constant;
+
+public class PedestrianCostEvaluation implements CostEvaluator<Double> {
 
     @Override
     public Double getCost(Relationship relationship, Direction direction) {
-        return new Double(1);
+        Double length = Double.valueOf("" + relationship.getProperty("length", Constant.INFINY));
+        Integer speed = Constant.DEFAULT_PEDESTRIAN_SPEED;
+        return (length / 1000) / speed;
     }
 
 }
