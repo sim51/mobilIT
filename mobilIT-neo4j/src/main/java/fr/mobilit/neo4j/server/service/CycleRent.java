@@ -80,13 +80,17 @@ public abstract class CycleRent {
      */
     public abstract Map<String, Integer> getStation(String id) throws MobilITException;
 
+    public POI getNearestStation(Double lon, Double lat, Integer status) throws MobilITException {
+        return getNearestStation(lon, lat, 2.0, status);
+    }
+
     /**
      * Method to get the nearest rent cycle station by longitude and latitude.
      * 
      * @param lon the longitude
      * @param lat the latitude
      * @param distance
-     * @param status
+     * @param status if 0 we search a station with free cycle, if 1 with free slot and if null whatever !
      * @return
      */
     public POI getNearestStation(Double lon, Double lat, Double distance, Integer status) throws MobilITException {

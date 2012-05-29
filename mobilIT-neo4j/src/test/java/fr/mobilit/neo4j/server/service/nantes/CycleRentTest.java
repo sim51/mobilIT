@@ -35,7 +35,7 @@ public class CycleRentTest extends Neo4jTestCase {
 
     @BeforeClass
     public void setUp() throws Exception {
-        super.setUp(false);
+        super.setUp(true);
     }
 
     @Test
@@ -52,6 +52,19 @@ public class CycleRentTest extends Neo4jTestCase {
         assertNotNull(result.get(Constant.CYCLE_AVAIBLE));
         assertNotNull(result.get(Constant.CYCLE_FREE));
         assertNotNull(result.get(Constant.CYCLE_TOTAL));
+    }
+
+    @Test
+    public void testNearestStation() throws MobilITException {
+        Double lat = new Double(-1.5569311380386353);
+        Double lon = new Double(47.22245365625265);
+        CycleRentImpl nantes = (CycleRentImpl) CycleRent.getService(this.spatial(), Constant.NANTES_GEO_CODE);
+        POI station = nantes.getNearestStation(lon, lat, null);
+        assertNotNull(station);
+        station = nantes.getNearestStation(lon, lat, 10.0, 0);
+        assertNotNull(station);
+        station = nantes.getNearestStation(lon, lat, 10.0, 1);
+        assertNotNull(station);
     }
 
     @AfterClass
