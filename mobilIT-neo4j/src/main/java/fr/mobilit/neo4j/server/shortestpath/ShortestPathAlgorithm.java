@@ -44,6 +44,18 @@ import fr.mobilit.neo4j.server.utils.TemplateUtils;
 
 public class ShortestPathAlgorithm {
 
+    /**
+     * Algorithm to find the shorestpath from OSM road data.
+     * 
+     * @param spatial
+     * @param lat1
+     * @param long1
+     * @param lat2
+     * @param long2
+     * @param eval
+     * @return
+     * @throws MobilITException
+     */
     public static String search(SpatialDatabaseService spatial, Double lat1, Double long1, Double lat2, Double long2,
             CostEvaluator<Double> eval) throws MobilITException {
         try {
@@ -60,6 +72,14 @@ public class ShortestPathAlgorithm {
         }
     }
 
+    /**
+     * Generate the http response compatible openLS with velocity template.
+     * 
+     * @param path
+     * @param cost
+     * @return
+     */
+    // TODO : doing an openLS compatible response
     private static String generateResponse(List<Relationship> path, Double cost) {
         // initialize velocity
         Properties props = new Properties();
