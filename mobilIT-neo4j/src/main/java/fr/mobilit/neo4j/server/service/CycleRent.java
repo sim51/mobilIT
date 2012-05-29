@@ -18,16 +18,42 @@
  */
 package fr.mobilit.neo4j.server.service;
 
+import java.lang.reflect.Constructor;
 import java.util.List;
 import java.util.Map;
 
+import org.neo4j.gis.spatial.SpatialDatabaseService;
+
 import fr.mobilit.neo4j.server.exception.MobilITException;
 import fr.mobilit.neo4j.server.pojo.POI;
+import fr.mobilit.neo4j.server.utils.Constant;
 
 public abstract class CycleRent {
 
-    public static PublicTransport getService() {
-        return null;
+    protected SpatialDatabaseService spatial;
+
+    /**
+     * Method to get a cycle service by the geocode.
+     * 
+     * @param spatial
+     * @param geocode
+     * @return
+     * @throws MobilITException
+     */
+    public static CycleRent getService(SpatialDatabaseService spatial, String geocode) throws MobilITException {
+        Class serviceClass = Constant.CYCLE_SERVICE.get(geocode);
+        if (serviceClass != null) {
+            try {
+                Constructor serviceConstructor = serviceClass.getConstructor(SpatialDatabaseService.class);
+                CycleRent service = (CycleRent) serviceConstructor.newInstance(spatial);
+                return service;
+            } catch (Exception e) {
+                throw new MobilITException(e.getMessage(), e.getCause());
+            }
+        }
+        else {
+            throw new MobilITException("There is no cycle service for geocode " + geocode);
+        }
     }
 
     /**
@@ -46,7 +72,9 @@ public abstract class CycleRent {
      * @param status : 0-> whatever ; 1-> with free cycle ; 2-> with free slot
      * @return
      */
-    public abstract List<POI> getNearestStation(Double lon, Double lat, Integer status) throws MobilITException;
+    public List<POI> getNearestStation(Double lon, Double lat, Integer status) throws MobilITException {
+        return null;
+    }
 
     /**
      * Method to get the sttus of a station (avaible & free slot).

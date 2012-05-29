@@ -32,7 +32,6 @@ import javax.ws.rs.core.Response.Status;
 
 import org.neo4j.gis.spatial.SpatialDatabaseService;
 import org.neo4j.gis.spatial.osm.OSMImporter;
-import org.neo4j.gis.spatial.osm.OSMLayer;
 import org.neo4j.graphdb.GraphDatabaseService;
 
 import fr.mobilit.neo4j.server.utils.Constant;
@@ -99,8 +98,6 @@ public class Import {
             }
             // index all osm data
             importer.reIndex(db, 1000, true, true);
-            // create layer
-            OSMLayer osmLayer = (OSMLayer) this.spatial.getLayer(Constant.LAYER_OSM);
             return Response.status(Status.OK).build();
         } catch (Exception e) {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage() + " :" + e.getCause()).build();

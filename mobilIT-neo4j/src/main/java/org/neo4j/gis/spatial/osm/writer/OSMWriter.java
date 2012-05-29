@@ -338,6 +338,100 @@ public abstract class OSMWriter<T> {
         this.wayCount++;
     }
 
+    public void createOSMWayOriginal(Map<String, Object> wayProperties, ArrayList<Long> wayNodes,
+            LinkedHashMap<String, Object> wayTags) {
+        RoadDirection direction = osmImporter.isOneway(wayTags);
+        String name = (String) wayTags.get("name");
+        int geometry = Constants.GTYPE_LINESTRING;
+        boolean isRoad = wayTags.containsKey("highway");
+        if (isRoad) {
+            wayProperties.put("oneway", direction.toString());
+            wayProperties.put("highway", wayTags.get("highway"));
+        }
+        if (name != null) {
+            // Copy name tag to way because this seems like a valuable location for
+            // such a property
+            wayProperties.put("name", name);
+        }
+        String way_osm_id = (String) wayProperties.get("way_osm_id");
+        if (way_osm_id.equals("28338132")) {
+            System.out.println("Debug way: " + way_osm_id);
+        }
+        T changesetNode = getChangesetNode(wayProperties);
+        T way = addNode(osmImporter.INDEX_NAME_WAY, wayProperties, "way_osm_id");
+        createRelationship(way, changesetNode, OSMRelation.CHANGESET);
+        if (prev_way == null) {
+            createRelationship(osm_dataset, way, OSMRelation.WAYS);
+        }
+        else {
+            createRelationship(prev_way, way, OSMRelation.NEXT);
+        }
+        prev_way = way;
+        addNodeTags(way, wayTags, "way");
+        Envelope bbox = new Envelope();
+        T firstNode = null;
+        T prevNode = null;
+        T prevProxy = null;
+        Map<String, Object> prevProps = null;
+        LinkedHashMap<String, Object> relProps = new LinkedHashMap<String, Object>();
+        HashMap<String, Object> directionProps = new HashMap<String, Object>();
+        directionProps.put("oneway", true);
+        for (long nd_ref : wayNodes) {
+            // long pointNode = batchIndexService.getSingleNode("node_osm_id", nd_ref);
+            T pointNode = getOSMNode(nd_ref, changesetNode);
+            if (pointNode == null) {
+                /*
+                 * This can happen if we import not whole planet, so some referenced nodes will be unavailable
+                 */
+                missingNode(nd_ref);
+                continue;
+            }
+            T proxyNode = createProxyNode();
+            if (firstNode == null) {
+                firstNode = pointNode;
+            }
+            if (prevNode == pointNode) {
+                continue;
+            }
+            createRelationship(proxyNode, pointNode, OSMRelation.NODE, null);
+            Map<String, Object> nodeProps = getNodeProperties(pointNode);
+            double[] location = new double[] { (Double) nodeProps.get("lon"), (Double) nodeProps.get("lat") };
+            bbox.expandToInclude(location[0], location[1]);
+            if (prevProxy == null) {
+                createRelationship(way, proxyNode, OSMRelation.FIRST_NODE);
+            }
+            else {
+                relProps.clear();
+                double[] prevLoc = new double[] { (Double) prevProps.get("lon"), (Double) prevProps.get("lat") };
+                double length = osmImporter.distance(prevLoc[0], prevLoc[1], location[0], location[1]);
+                relProps.put("length", length);
+                // We default to bi-directional (and don't store direction in the
+                // way node), but if it is one-way we mark it as such, and define
+                // the direction using the relationship direction
+                if (direction == RoadDirection.BACKWARD) {
+                    createRelationship(proxyNode, prevProxy, OSMRelation.NEXT, relProps);
+                }
+                else {
+                    createRelationship(prevProxy, proxyNode, OSMRelation.NEXT, relProps);
+                }
+            }
+            prevNode = pointNode;
+            prevProxy = proxyNode;
+            prevProps = nodeProps;
+        }
+        // if (prevNode > 0) {
+        // batchGraphDb.createRelationship(way, prevNode, OSMRelation.LAST_NODE, null);
+        // }
+        if (firstNode != null && prevNode == firstNode) {
+            geometry = Constants.GTYPE_POLYGON;
+        }
+        if (wayNodes.size() < 2) {
+            geometry = Constants.GTYPE_POINT;
+        }
+        addNodeGeometry(way, geometry, bbox, wayNodes.size());
+        this.wayCount++;
+    }
+
     public void createOSMRelation(Map<String, Object> relationProperties,
             ArrayList<Map<String, Object>> relationMembers, LinkedHashMap<String, Object> relationTags) {
         String name = (String) relationTags.get("name");

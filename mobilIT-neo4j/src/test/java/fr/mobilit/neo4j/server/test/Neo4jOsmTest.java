@@ -61,11 +61,11 @@ public class Neo4jOsmTest extends Neo4jTestCase {
             Node node = dbRecord.getGeomNode();
             Node osmPoint = node.getSingleRelationship(DynamicRelationshipType.withName("GEOM"), Direction.INCOMING)
                     .getStartNode();
-            String streetName = null;
             for (Relationship relation : osmPoint.getRelationships(DynamicRelationshipType.withName("LINKED"))) {
-                if (relation.getProperty("name", null) != null)
+                if (relation.getProperty("name", null) != null) {
                     nearestRoad = relation;
-                find = true;
+                    find = true;
+                }
             }
             i++;
         }

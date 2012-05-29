@@ -309,11 +309,11 @@ public class OSMImporter {
                             osmWriter.createOSMWay(wayProperties, wayNodes, currentNodeTags);
                         }
                         else if (currentXMLTags.toString().equals("[osm, relation]")) {
-                            // osmWriter.createOSMRelation(relationProperties, relationMembers, currentNodeTags);
+                            osmWriter.createOSMRelation(relationProperties, relationMembers, currentNodeTags);
                         }
                         depth--;
                         currentXMLTags.remove(depth);
-                        // log("Ending tag at depth "+depth+": "+currentTags.get(depth));
+                        // log("Ending tag at depth " + depth + ": " + currentTags.get(depth));
                         break;
                     default:
                         break;

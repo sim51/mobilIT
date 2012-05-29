@@ -10,6 +10,9 @@ import org.neo4j.gis.spatial.pipes.GeoPipeline;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.DynamicRelationshipType;
 import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.Relationship;
+import org.neo4j.graphdb.RelationshipType;
+import org.neo4j.graphdb.Transaction;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
@@ -20,11 +23,22 @@ public class SpatialUtils {
     private SpatialDatabaseService spatial;
     private Layer                  osm;
 
+    /**
+     * Constructor.
+     */
     public SpatialUtils(SpatialDatabaseService spatial) {
         this.spatial = spatial;
         this.osm = spatial.getLayer(Constant.LAYER_OSM);
     }
 
+    /**
+     * Find the nearest OSM way node from a coordinate (lng, lat).
+     * 
+     * @param lat
+     * @param lon
+     * @return
+     * @throws MobilITException
+     */
     public Node findNearestWay(Double lat, Double lon) throws MobilITException {
         Coordinate coord = new Coordinate(lat, lon);
         //@formatter:off
@@ -52,6 +66,47 @@ public class SpatialUtils {
             throw new MobilITException("Start Node not found");
         }
         return osmPoint;
+    }
+
+    /**
+     * Method to get or create a node if it doesnt exist.
+     * 
+     * @param name
+     * @param type
+     * @param parent
+     * @param relType
+     * @return
+     */
+    public Node getOrCreateNode(String name, String type, Node parent, RelationshipType relType) {
+        Node node = findNode(name, parent, relType);
+        if (node == null) {
+            Transaction tx = this.spatial.getDatabase().beginTx();
+            node = this.spatial.getDatabase().createNode();
+            node.setProperty("name", name);
+            node.setProperty("type", type);
+            parent.createRelationshipTo(node, relType);
+            tx.success();
+            tx.finish();
+        }
+        return node;
+    }
+
+    /**
+     * Find a child node from its parent and relation. m
+     * 
+     * @param name
+     * @param parent
+     * @param relType
+     * @return
+     */
+    private Node findNode(String name, Node parent, RelationshipType relType) {
+        for (Relationship relationship : parent.getRelationships(relType, Direction.OUTGOING)) {
+            Node node = relationship.getEndNode();
+            if (name.equals(node.getProperty("name"))) {
+                return node;
+            }
+        }
+        return null;
     }
 
 }

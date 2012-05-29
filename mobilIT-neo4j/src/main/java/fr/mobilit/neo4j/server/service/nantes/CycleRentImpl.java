@@ -7,6 +7,12 @@ import java.util.Map;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.neo4j.gis.spatial.EditableLayer;
+import org.neo4j.gis.spatial.EditableLayerImpl;
+import org.neo4j.gis.spatial.SpatialDatabaseService;
+import org.neo4j.gis.spatial.encoders.SimplePointEncoder;
+import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.Transaction;
 
 import fr.mobilit.neo4j.server.exception.MobilITException;
 import fr.mobilit.neo4j.server.pojo.POI;
@@ -15,8 +21,21 @@ import fr.mobilit.neo4j.server.utils.Constant;
 
 public class CycleRentImpl extends CycleRent {
 
+    /**
+     * Nantes URL service for cycle rent.
+     */
     private final static String IMPORT_URL = "http://www.bicloo.nantesmetropole.fr/service/carto";
     private final static String DETAIL_URL = "http://www.bicloo.nantesmetropole.fr/service/stationdetails/nantes/";
+
+    /**
+     * Constructor.
+     * 
+     * @param spatial
+     */
+    public CycleRentImpl(SpatialDatabaseService spatial) {
+        super();
+        this.spatial = spatial;
+    }
 
     @Override
     public List<POI> importStation() throws MobilITException {
@@ -65,14 +84,33 @@ public class CycleRentImpl extends CycleRent {
         } finally {
             get.releaseConnection();
         }
-        // TODO : save stations database !!!
-        return stations;
-    }
 
-    @Override
-    public List<POI> getNearestStation(Double lon, Double lat, Integer status) {
-        // TODO Auto-generated method stub
-        return null;
+        // create layer
+        EditableLayer cycleLayer;
+        if (!this.spatial.containsLayer(Constant.LAYER_CYCLE)) {
+            cycleLayer = (EditableLayer) this.spatial.createLayer(Constant.LAYER_CYCLE, SimplePointEncoder.class,
+                    EditableLayerImpl.class, "lon:lat");
+        }
+        else {
+            cycleLayer = (EditableLayer) this.spatial.getLayer(Constant.LAYER_CYCLE);
+        }
+        Transaction tx = this.spatial.getDatabase().beginTx();
+        for (int i = 0; i < stations.size(); i++) {
+            // create data node
+            POI currentStation = stations.get(i);
+            Node currentNode = this.spatial.getDatabase().createNode();
+            currentNode.setProperty("name", currentStation.getName());
+            currentNode.setProperty("lat", currentStation.getLatitude());
+            currentNode.setProperty("lon", currentStation.getLongitude());
+            currentNode.setProperty("geoid", Constant.NANTES_GEO_CODE);
+            currentNode.setProperty("id", currentStation.getId());
+
+            // save geom into layer
+            cycleLayer.add(currentNode);
+        }
+        tx.success();
+        tx.finish();
+        return stations;
     }
 
     @Override
