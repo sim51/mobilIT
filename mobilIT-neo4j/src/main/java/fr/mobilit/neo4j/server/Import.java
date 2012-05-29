@@ -20,6 +20,7 @@ package fr.mobilit.neo4j.server;
 
 import java.io.File;
 import java.nio.charset.Charset;
+import java.util.Iterator;
 
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
@@ -34,6 +35,7 @@ import org.neo4j.gis.spatial.SpatialDatabaseService;
 import org.neo4j.gis.spatial.osm.OSMImporter;
 import org.neo4j.graphdb.GraphDatabaseService;
 
+import fr.mobilit.neo4j.server.service.CycleRent;
 import fr.mobilit.neo4j.server.utils.Constant;
 
 /**
@@ -98,6 +100,14 @@ public class Import {
             }
             // index all osm data
             importer.reIndex(db, 1000, true, true);
+
+            // import cycle rent POI
+            Iterator cycleIter = Constant.CYCLE_SERVICE.keySet().iterator();
+            while (cycleIter.hasNext()) {
+                String geocode = (String) cycleIter.next();
+                CycleRent service = CycleRent.getService(spatial, geocode);
+                service.importStation();
+            }
             return Response.status(Status.OK).build();
         } catch (Exception e) {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage() + " :" + e.getCause()).build();
