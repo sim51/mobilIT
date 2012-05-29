@@ -22,23 +22,27 @@ public class POI {
 
     private String id;
     private String name;
-    private String osm_node_id;
     private Double longitude;
     private Double latitude;
+    private String geocode;
 
     /**
+     * Constructor.
+     * 
      * @param id
      * @param name
      * @param osm_node_id
      * @param longitude
      * @param latitude
+     * @param geocode
      */
-    public POI(String id, String name, Double longitude, Double latitude) {
+    public POI(String id, String name, Double longitude, Double latitude, String geocode) {
         super();
         this.id = id;
         this.name = name;
         this.longitude = longitude;
         this.latitude = latitude;
+        this.geocode = geocode;
     }
 
     /**
@@ -70,17 +74,17 @@ public class POI {
     }
 
     /**
-     * @return the osm_node_id
+     * @return the geocode
      */
-    public String getOsm_node_id() {
-        return osm_node_id;
+    public String getGeocode() {
+        return geocode;
     }
 
     /**
-     * @param osm_node_id the osm_node_id to set
+     * @param geocode the geocode to set
      */
-    public void setOsm_node_id(String osm_node_id) {
-        this.osm_node_id = osm_node_id;
+    public void setGeocode(String geocode) {
+        this.geocode = geocode;
     }
 
     /**

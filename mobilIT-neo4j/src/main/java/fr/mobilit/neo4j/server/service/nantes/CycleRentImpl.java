@@ -65,7 +65,7 @@ public class CycleRentImpl extends CycleRent {
                             String name = parser.getAttributeValue("", "address");
                             Double longitude = Double.valueOf(parser.getAttributeValue("", "lng"));
                             Double latitude = Double.valueOf(parser.getAttributeValue("", "lat"));
-                            POI station = new POI(id, name, longitude, latitude);
+                            POI station = new POI(id, name, longitude, latitude, Constant.NANTES_GEO_CODE);
                             stations.add(station);
                         }
                         depth++;
@@ -102,7 +102,7 @@ public class CycleRentImpl extends CycleRent {
             currentNode.setProperty("name", currentStation.getName());
             currentNode.setProperty("lat", currentStation.getLatitude());
             currentNode.setProperty("lon", currentStation.getLongitude());
-            currentNode.setProperty("geoid", Constant.NANTES_GEO_CODE);
+            currentNode.setProperty("geocode", Constant.NANTES_GEO_CODE);
             currentNode.setProperty("id", currentStation.getId());
 
             // save geom into layer
