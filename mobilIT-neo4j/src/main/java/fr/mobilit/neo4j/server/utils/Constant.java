@@ -52,4 +52,13 @@ public class Constant {
         CYCLE_SERVICE.put(NANTES_GEO_CODE, fr.mobilit.neo4j.server.service.nantes.CycleRentImpl.class);
     }
 
+    // constant for parking service
+    public static final String                 PARKING_FREE             = "free";
+    public static final String                 PARKING_AVAIBLE          = "avaible";
+    public static final String                 PARKING_TOTAL            = "total";
+    public static final String                 PARKING_CYCLE            = "cycle";
+    public static final HashMap<String, Class> PARKING_SERVICE          = new HashMap<String, Class>();
+    static {
+        // CYCLE_SERVICE.put(NANTES_GEO_CODE, fr.mobilit.neo4j.server.service.nantes.CycleRentImpl.class);
+    }
 }
