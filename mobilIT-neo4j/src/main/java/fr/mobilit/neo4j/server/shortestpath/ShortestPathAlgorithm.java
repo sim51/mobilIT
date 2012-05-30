@@ -80,7 +80,7 @@ public class ShortestPathAlgorithm {
      * @return
      */
     // TODO : doing an openLS compatible response
-    private static String generateResponse(List<Relationship> path, Double cost) {
+    public static String generateResponse(List<Relationship> path, Double cost) {
         // initialize velocity
         Properties props = new Properties();
         props.setProperty(VelocityEngine.RESOURCE_LOADER, "classpath");

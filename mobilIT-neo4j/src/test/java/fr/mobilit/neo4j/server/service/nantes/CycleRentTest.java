@@ -18,6 +18,7 @@
  */
 package fr.mobilit.neo4j.server.service.nantes;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -36,6 +37,13 @@ public class CycleRentTest extends Neo4jTestCase {
     @BeforeClass
     public void setUp() throws Exception {
         super.setUp(true);
+        // import cycle rent POI
+        Iterator cycleIter = Constant.CYCLE_SERVICE.keySet().iterator();
+        while (cycleIter.hasNext()) {
+            String geocode = (String) cycleIter.next();
+            CycleRent service = CycleRent.getService(this.spatial(), geocode);
+            service.importStation();
+        }
     }
 
     @Test
@@ -59,11 +67,11 @@ public class CycleRentTest extends Neo4jTestCase {
         Double lat = new Double(-1.5569311380386353);
         Double lon = new Double(47.22245365625265);
         CycleRentImpl nantes = (CycleRentImpl) CycleRent.getService(this.spatial(), Constant.NANTES_GEO_CODE);
-        POI station = nantes.getNearestStation(lon, lat, null);
+        POI station = nantes.getNearestStation(this.spatial(), lon, lat, 10.0, null);
         assertNotNull(station);
-        station = nantes.getNearestStation(lon, lat, 10.0, 0);
+        station = nantes.getNearestStation(this.spatial(), lon, lat, 10.0, 0);
         assertNotNull(station);
-        station = nantes.getNearestStation(lon, lat, 10.0, 1);
+        station = nantes.getNearestStation(this.spatial(), lon, lat, 10.0, 1);
         assertNotNull(station);
     }
 

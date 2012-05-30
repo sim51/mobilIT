@@ -80,8 +80,9 @@ public abstract class CycleRent {
      */
     public abstract Map<String, Integer> getStation(String id) throws MobilITException;
 
-    public POI getNearestStation(Double lon, Double lat, Integer status) throws MobilITException {
-        return getNearestStation(lon, lat, 2.0, status);
+    public static POI getNearestStation(SpatialDatabaseService spatial, Double lon, Double lat, Integer status)
+            throws MobilITException {
+        return getNearestStation(spatial, lon, lat, 2.0, status);
     }
 
     /**
@@ -93,26 +94,27 @@ public abstract class CycleRent {
      * @param status if 0 we search a station with free cycle, if 1 with free slot and if null whatever !
      * @return
      */
-    public POI getNearestStation(Double lon, Double lat, Double distance, Integer status) throws MobilITException {
+    public static POI getNearestStation(SpatialDatabaseService spatial, Double lon, Double lat, Double distance,
+            Integer status) throws MobilITException {
         Coordinate coord = new Coordinate(lat, lon);
-        EditableLayer cycleLayer = this.spatial.getOrCreateEditableLayer(Constant.LAYER_CYCLE);
+        EditableLayer cycleLayer = spatial.getOrCreateEditableLayer(Constant.LAYER_CYCLE);
         //@formatter:off
         List<GeoPipeFlow> results = GeoPipeline
-                .startNearestNeighborLatLonSearch(cycleLayer, coord, distance)
-                .sort("OrthodromicDistance")
+                .startNearestNeighborSearch(cycleLayer, coord, distance)
+                .sort("Distance")
                 .toList();
         //@formatter:on
         int i = 0;
         Boolean find = false;
         POI nearest = null;
-        while (find = false && i < results.size()) {
+        while (find == false && i < results.size()) {
             SpatialDatabaseRecord dbRecord = results.get(i).getRecord();
             Node node = dbRecord.getGeomNode();
             String geocode = (String) node.getProperty("geocode", null);
             String id = (String) node.getProperty("id", null);
             String name = (String) node.getProperty("name", null);
-            Double lng = Double.valueOf((String) node.getProperty("lon", null));
-            Double lati = Double.valueOf((String) node.getProperty("lat", null));
+            Double lng = (Double) node.getProperty("lon", null);
+            Double lati = (Double) node.getProperty("lat", null);
             if (status != null && (status == 0 || status == 1)) {
                 CycleRent service = CycleRent.getService(spatial, geocode);
                 HashMap<String, Integer> places = (HashMap<String, Integer>) service.getStation(id);
@@ -141,9 +143,9 @@ public abstract class CycleRent {
                 nearest = new POI(id, name, lng, lati, geocode);
                 find = true;
             }
+            i++;
         }
         // TODO: throw an exception if there is no station ?
         return nearest;
     }
-
 }

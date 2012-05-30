@@ -29,6 +29,8 @@ import javax.ws.rs.core.Response.Status;
 import org.neo4j.gis.spatial.SpatialDatabaseService;
 import org.neo4j.graphdb.GraphDatabaseService;
 
+import fr.mobilit.neo4j.server.pojo.POI;
+import fr.mobilit.neo4j.server.service.CycleRent;
 import fr.mobilit.neo4j.server.shortestpath.ShortestPathAlgorithm;
 import fr.mobilit.neo4j.server.shortestpath.costEvaluator.CarCostEvaluation;
 import fr.mobilit.neo4j.server.shortestpath.costEvaluator.CycleCostEvaluation;
@@ -79,7 +81,7 @@ public class SearchPath {
     @GET
     @Produces(MediaType.APPLICATION_XML)
     @Path("/searchpath/pedestrian")
-    public Response biclou(Double lat1, Double long1, Double lat2, Double long2) {
+    public Response pedestrian(Double lat1, Double long1, Double lat2, Double long2) {
         try {
             PedestrianCostEvaluation eval = new PedestrianCostEvaluation();
             String result = ShortestPathAlgorithm.search(spatial, lat1, long1, lat2, long2, eval);
@@ -89,4 +91,32 @@ public class SearchPath {
         }
     }
 
+    @GET
+    @Produces(MediaType.APPLICATION_XML)
+    @Path("/searchpath/cycle/rent")
+    public Response cycleRent(Double lat1, Double long1, Double lat2, Double long2) {
+        try {
+            // searching cycle station
+            POI cycleStation1 = CycleRent.getNearestStation(spatial, long1, lat1, 0);
+            POI cycleStation2 = CycleRent.getNearestStation(spatial, long2, lat2, 1);
+
+            // pedestrian => cycle station
+            PedestrianCostEvaluation evalPedestrian = new PedestrianCostEvaluation();
+            ShortestPathAlgorithm.search(spatial, lat1, long1, cycleStation1.getLatitude(),
+                    cycleStation1.getLongitude(), evalPedestrian);
+
+            // cycle station 1=> cycle station 2
+            CycleCostEvaluation evalCycle = new CycleCostEvaluation();
+            ShortestPathAlgorithm.search(spatial, cycleStation1.getLatitude(), cycleStation1.getLongitude(),
+                    cycleStation2.getLatitude(), cycleStation2.getLongitude(), evalCycle);
+
+            // cycle station 2 => ending point
+            String result = ShortestPathAlgorithm.search(spatial, cycleStation2.getLatitude(),
+                    cycleStation2.getLongitude(), lat2, long2, evalPedestrian);
+
+            return Response.status(Status.OK).entity(result).build();
+        } catch (Exception e) {
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage() + " :" + e.getCause()).build();
+        }
+    }
 }
