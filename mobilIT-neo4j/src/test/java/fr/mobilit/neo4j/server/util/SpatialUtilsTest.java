@@ -35,7 +35,7 @@ public class SpatialUtilsTest extends Neo4jTestCase {
             if (relation.getProperty("name", null) != null)
                 nearestRoad = relation;
         }
-        assertEquals("Rue Pul Bellamy", nearestRoad.getProperty("name"));
+        assertEquals("Rue Saint Stanislas", nearestRoad.getProperty("name"));
     }
 
     @After
