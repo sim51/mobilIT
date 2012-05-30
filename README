@@ -1,2 +1,22 @@
-mobilIT project
+*rought introduction to the project*
 
+h1. MobilIT
+
+This project aims to help citizens that are travelling all morning long to reach their job or something alike.
+
+With the help of Open Data and related services, MobilIT tries to provide estimates on several transport costs in time, CO2, length, money and so on.
+
+Transports forecasted are :
+* common transports like Buses, Trams, Trains
+* Car
+* Cycle Park (rentals)
+
+Other ones might be integrated further, like carpooling, car-sharing or other private (for now) services.
+
+h2. Open Data
+
+MobilIT will base its computation on data or services that are open, Open Street Map is an example, but we'll also use traffic jam data (real time).
+
+h2. Outcomes
+
+What the user will have in hands after having entered his travel (using maps, address forms, ...), it will get a comparison table between all transports that he envisions to use.
