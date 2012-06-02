@@ -16,10 +16,10 @@ import org.neo4j.graphdb.Transaction;
 
 import fr.mobilit.neo4j.server.exception.MobilITException;
 import fr.mobilit.neo4j.server.pojo.POI;
-import fr.mobilit.neo4j.server.service.CycleRent;
+import fr.mobilit.neo4j.server.service.AbstractCycleRent;
 import fr.mobilit.neo4j.server.utils.Constant;
 
-public class CycleRentImpl extends CycleRent {
+public class CycleRentImpl extends AbstractCycleRent {
 
     /**
      * Nantes URL service for cycle rent.

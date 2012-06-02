@@ -35,7 +35,7 @@ import org.neo4j.gis.spatial.SpatialDatabaseService;
 import org.neo4j.gis.spatial.osm.OSMImporter;
 import org.neo4j.graphdb.GraphDatabaseService;
 
-import fr.mobilit.neo4j.server.service.CycleRent;
+import fr.mobilit.neo4j.server.service.ServiceCycleRent;
 import fr.mobilit.neo4j.server.utils.Constant;
 
 /**
@@ -105,7 +105,7 @@ public class Import {
             Iterator cycleIter = Constant.CYCLE_SERVICE.keySet().iterator();
             while (cycleIter.hasNext()) {
                 String geocode = (String) cycleIter.next();
-                CycleRent service = CycleRent.getService(spatial, geocode);
+                ServiceCycleRent service = ServiceCycleRent.getService(spatial, geocode);
                 service.importStation();
             }
             return Response.status(Status.OK).build();

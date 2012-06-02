@@ -21,7 +21,6 @@ package fr.mobilit.neo4j.server.service;
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.neo4j.gis.spatial.EditableLayer;
 import org.neo4j.gis.spatial.SpatialDatabaseRecord;
@@ -36,9 +35,19 @@ import fr.mobilit.neo4j.server.exception.MobilITException;
 import fr.mobilit.neo4j.server.pojo.POI;
 import fr.mobilit.neo4j.server.utils.Constant;
 
-public abstract class CycleRent {
+public class ServiceCycleRent {
 
     protected SpatialDatabaseService spatial;
+
+    /**
+     * Constructor.
+     * 
+     * @param spatial
+     */
+    public ServiceCycleRent(SpatialDatabaseService spatial) {
+        super();
+        this.spatial = spatial;
+    }
 
     /**
      * Method to get a cycle service by the geocode.
@@ -48,12 +57,12 @@ public abstract class CycleRent {
      * @return
      * @throws MobilITException
      */
-    public static CycleRent getService(SpatialDatabaseService spatial, String geocode) throws MobilITException {
+    public AbstractCycleRent getGeoService(String geocode) throws MobilITException {
         Class serviceClass = Constant.CYCLE_SERVICE.get(geocode);
         if (serviceClass != null) {
             try {
                 Constructor serviceConstructor = serviceClass.getConstructor(SpatialDatabaseService.class);
-                CycleRent service = (CycleRent) serviceConstructor.newInstance(spatial);
+                AbstractCycleRent service = (AbstractCycleRent) serviceConstructor.newInstance(spatial);
                 return service;
             } catch (Exception e) {
                 throw new MobilITException(e.getMessage(), e.getCause());
@@ -64,25 +73,8 @@ public abstract class CycleRent {
         }
     }
 
-    /**
-     * Method to import all rent cycle station to the database.
-     * 
-     * @return the list of station imported
-     * @throws MobilITException
-     */
-    public abstract List<POI> importStation() throws MobilITException;
-
-    /**
-     * Method to get the sttus of a station (avaible & free slot).
-     * 
-     * @param id the id of the station.
-     * @return
-     */
-    public abstract Map<String, Integer> getStation(String id) throws MobilITException;
-
-    public static POI getNearestStation(SpatialDatabaseService spatial, Double lon, Double lat, Integer status)
-            throws MobilITException {
-        return getNearestStation(spatial, lon, lat, 2.0, status);
+    public POI getNearestStation(Double lon, Double lat, Integer status) throws MobilITException {
+        return getNearestStation(lon, lat, 2.0, status);
     }
 
     /**
@@ -94,8 +86,7 @@ public abstract class CycleRent {
      * @param status if 0 we search a station with free cycle, if 1 with free slot and if null whatever !
      * @return
      */
-    public static POI getNearestStation(SpatialDatabaseService spatial, Double lon, Double lat, Double distance,
-            Integer status) throws MobilITException {
+    public POI getNearestStation(Double lon, Double lat, Double distance, Integer status) throws MobilITException {
         Coordinate coord = new Coordinate(lat, lon);
         EditableLayer cycleLayer = spatial.getOrCreateEditableLayer(Constant.LAYER_CYCLE);
         //@formatter:off
@@ -116,7 +107,7 @@ public abstract class CycleRent {
             Double lng = (Double) node.getProperty("lon", null);
             Double lati = (Double) node.getProperty("lat", null);
             if (status != null && (status == 0 || status == 1)) {
-                CycleRent service = CycleRent.getService(spatial, geocode);
+                AbstractCycleRent service = this.getGeoService(geocode);
                 HashMap<String, Integer> places = (HashMap<String, Integer>) service.getStation(id);
                 switch (status) {
                 // check if there is free cycle (start point)
@@ -148,4 +139,23 @@ public abstract class CycleRent {
         // TODO: throw an exception if there is no station ?
         return nearest;
     }
+
+    /**
+     * Getter.
+     * 
+     * @return the spatial
+     */
+    public SpatialDatabaseService getSpatial() {
+        return spatial;
+    }
+
+    /**
+     * Setter.
+     * 
+     * @param spatial the spatial to set
+     */
+    public void setSpatial(SpatialDatabaseService spatial) {
+        this.spatial = spatial;
+    }
+
 }

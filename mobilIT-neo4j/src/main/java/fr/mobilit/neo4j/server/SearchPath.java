@@ -30,7 +30,7 @@ import org.neo4j.gis.spatial.SpatialDatabaseService;
 import org.neo4j.graphdb.GraphDatabaseService;
 
 import fr.mobilit.neo4j.server.pojo.POI;
-import fr.mobilit.neo4j.server.service.CycleRent;
+import fr.mobilit.neo4j.server.service.ServiceCycleRent;
 import fr.mobilit.neo4j.server.shortestpath.ShortestPathAlgorithm;
 import fr.mobilit.neo4j.server.shortestpath.costEvaluator.CarCostEvaluation;
 import fr.mobilit.neo4j.server.shortestpath.costEvaluator.CycleCostEvaluation;
@@ -97,8 +97,8 @@ public class SearchPath {
     public Response cycleRent(Double lat1, Double long1, Double lat2, Double long2) {
         try {
             // searching cycle station
-            POI cycleStation1 = CycleRent.getNearestStation(spatial, long1, lat1, 0);
-            POI cycleStation2 = CycleRent.getNearestStation(spatial, long2, lat2, 1);
+            POI cycleStation1 = ServiceCycleRent.getNearestStation(spatial, long1, lat1, 0);
+            POI cycleStation2 = ServiceCycleRent.getNearestStation(spatial, long2, lat2, 1);
 
             // pedestrian => cycle station
             PedestrianCostEvaluation evalPedestrian = new PedestrianCostEvaluation();
