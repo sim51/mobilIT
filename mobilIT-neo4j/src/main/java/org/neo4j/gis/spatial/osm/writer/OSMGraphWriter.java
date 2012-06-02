@@ -3,6 +3,7 @@ package org.neo4j.gis.spatial.osm.writer;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.neo4j.collections.rtree.Envelope;
 import org.neo4j.gis.spatial.Constants;
@@ -146,6 +147,18 @@ public class OSMGraphWriter extends OSMWriter<Node> {
             properties.put(indexKey, Long.parseLong(properties.get(indexKey).toString()));
         }
         addProperties(node, properties);
+        checkTx();
+        return node;
+    }
+
+    @Override
+    public Node index(String indexName, Node node, Set<String> indexKeys) {
+        for (String indexKey : indexKeys) {
+            Object property = node.getProperty(indexKey, null);
+            if (indexKey != null && property != null) {
+                indexFor(indexName).add(node, indexKey, property);
+            }
+        }
         checkTx();
         return node;
     }

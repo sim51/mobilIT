@@ -1,11 +1,6 @@
 package org.neo4j.gis.spatial.osm.writer;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 import org.neo4j.collections.rtree.Envelope;
 import org.neo4j.gis.spatial.Constants;
@@ -75,6 +70,16 @@ public abstract class OSMWriter<T> {
      * @return
      */
     public abstract T addNode(String name, Map<String, Object> properties, String indexKey);
+
+    /**
+     * Create and index node <code>name</code>
+     *
+     * @param indexName which index to be updated
+     * @param node the node to be indexed
+     * @param indexKeys the indexed keys (which have their values in properties)
+     * @return
+     */
+    public abstract T index(String indexName, T node, Set<String> indexKeys);
 
     public abstract void createRelationship(T from, T to, RelationshipType relType,
             LinkedHashMap<String, Object> relProps);
@@ -261,6 +266,10 @@ public abstract class OSMWriter<T> {
         String way_osm_id = (String) wayProperties.get("way_osm_id");
         T changesetNode = getChangesetNode(wayProperties);
         T way = addNode(osmImporter.INDEX_NAME_WAY, wayProperties, "way_osm_id");
+
+
+        index(osmImporter.INDEX_NAME_WAY, way, Collections.singleton("name"));
+
         createRelationship(way, changesetNode, OSMRelation.CHANGESET);
         if (prev_way == null) {
             createRelationship(osm_dataset, way, OSMRelation.WAYS);
