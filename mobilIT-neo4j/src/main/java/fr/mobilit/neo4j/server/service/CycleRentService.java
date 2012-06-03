@@ -74,7 +74,7 @@ public class CycleRentService {
     }
 
     public POI getNearest(Double lon, Double lat, Integer status) throws MobilITException {
-        return getNearest(lon, lat, 2.0, status);
+        return getNearest(lon, lat, 5.0, status);
     }
 
     /**

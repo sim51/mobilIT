@@ -18,11 +18,7 @@
  */
 package fr.mobilit.neo4j.server.service.nantes;
 
-<<<<<<< HEAD
-import java.util.Iterator;
-=======
 import java.util.ArrayList;
->>>>>>> 8fb40b015727d6be00dfa936dea132071e671321
 import java.util.List;
 import java.util.Map;
 
@@ -42,18 +38,9 @@ public class CycleRentTest extends Neo4jTestCase {
 
     private int numberOfStations = 0;
 
-
     @BeforeClass
     public void setUp() throws Exception {
         super.setUp(true);
-<<<<<<< HEAD
-        // import cycle rent POI
-        Iterator cycleIter = Constant.CYCLE_SERVICE.keySet().iterator();
-        while (cycleIter.hasNext()) {
-            String geocode = (String) cycleIter.next();
-            CycleRentService service = new CycleRentService(this.spatial());
-            service.getGeoService(geocode).importStation();
-=======
         HttpClient client = new HttpClient();
         GetMethod get = null;
         try {
@@ -91,7 +78,6 @@ public class CycleRentTest extends Neo4jTestCase {
             throw new RuntimeException(e.getMessage(), e.getCause());
         } finally {
             get.releaseConnection();
->>>>>>> 8fb40b015727d6be00dfa936dea132071e671321
         }
     }
 
@@ -104,14 +90,9 @@ public class CycleRentTest extends Neo4jTestCase {
 
     @Test
     public void testStation() throws MobilITException {
-<<<<<<< HEAD
         CycleRentService service = new CycleRentService(this.spatial());
         CycleRentImpl nantes = (CycleRentImpl) service.getGeoService(Constant.NANTES_GEO_CODE);
-        Map<String, Integer> result = nantes.getStation("103");
-=======
-        CycleRentImpl nantes = (CycleRentImpl) CycleRent.getService(this.spatial(), Constant.NANTES_GEO_CODE);
-        Map<String, Integer> result = nantes.getStation(""+numberOfStations);
->>>>>>> 8fb40b015727d6be00dfa936dea132071e671321
+        Map<String, Integer> result = nantes.getStation("" + numberOfStations);
         assertNotNull(result.get(Constant.CYCLE_AVAIBLE));
         assertNotNull(result.get(Constant.CYCLE_FREE));
         assertNotNull(result.get(Constant.CYCLE_TOTAL));
@@ -122,8 +103,7 @@ public class CycleRentTest extends Neo4jTestCase {
         Double lat = new Double(-1.5569311380386353);
         Double lon = new Double(47.22245365625265);
         CycleRentService service = new CycleRentService(this.spatial());
-        CycleRentImpl nantes = (CycleRentImpl) service.getGeoService(Constant.NANTES_GEO_CODE);
-        POI station = service.getNearest(lon, lat, 10.0, null);
+        POI station = service.getNearest(lon, lat, null);
         assertNotNull(station);
         station = service.getNearest(lon, lat, 10.0, 0);
         assertNotNull(station);
