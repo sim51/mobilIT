@@ -18,6 +18,8 @@
  */
 package fr.mobilit.neo4j.server;
 
+import java.util.List;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -29,8 +31,9 @@ import javax.ws.rs.core.Response.Status;
 import org.neo4j.gis.spatial.SpatialDatabaseService;
 import org.neo4j.graphdb.GraphDatabaseService;
 
+import fr.mobilit.neo4j.server.pojo.Itinerary;
 import fr.mobilit.neo4j.server.pojo.POI;
-import fr.mobilit.neo4j.server.service.ServiceCycleRent;
+import fr.mobilit.neo4j.server.service.CycleRentService;
 import fr.mobilit.neo4j.server.shortestpath.ShortestPathAlgorithm;
 import fr.mobilit.neo4j.server.shortestpath.costEvaluator.CarCostEvaluation;
 import fr.mobilit.neo4j.server.shortestpath.costEvaluator.CycleCostEvaluation;
@@ -58,8 +61,8 @@ public class SearchPath {
     public Response car(Double lat1, Double long1, Double lat2, Double long2) {
         try {
             CarCostEvaluation eval = new CarCostEvaluation();
-            String result = ShortestPathAlgorithm.search(spatial, lat1, long1, lat2, long2, eval);
-            return Response.status(Status.OK).entity(result).build();
+            List<Itinerary> path = ShortestPathAlgorithm.search(spatial, lat1, long1, lat2, long2, eval);
+            return Response.status(Status.OK).entity(ShortestPathAlgorithm.generateResponse(path)).build();
         } catch (Exception e) {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage() + " :" + e.getCause()).build();
         }
@@ -71,8 +74,8 @@ public class SearchPath {
     public Response cycle(Double lat1, Double long1, Double lat2, Double long2) {
         try {
             CycleCostEvaluation eval = new CycleCostEvaluation();
-            String result = ShortestPathAlgorithm.search(spatial, lat1, long1, lat2, long2, eval);
-            return Response.status(Status.OK).entity(result).build();
+            List<Itinerary> path = ShortestPathAlgorithm.search(spatial, lat1, long1, lat2, long2, eval);
+            return Response.status(Status.OK).entity(path).build();
         } catch (Exception e) {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage() + " :" + e.getCause()).build();
         }
@@ -84,8 +87,8 @@ public class SearchPath {
     public Response pedestrian(Double lat1, Double long1, Double lat2, Double long2) {
         try {
             PedestrianCostEvaluation eval = new PedestrianCostEvaluation();
-            String result = ShortestPathAlgorithm.search(spatial, lat1, long1, lat2, long2, eval);
-            return Response.status(Status.OK).entity(result).build();
+            List<Itinerary> path = ShortestPathAlgorithm.search(spatial, lat1, long1, lat2, long2, eval);
+            return Response.status(Status.OK).entity(path).build();
         } catch (Exception e) {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage() + " :" + e.getCause()).build();
         }
@@ -97,24 +100,26 @@ public class SearchPath {
     public Response cycleRent(Double lat1, Double long1, Double lat2, Double long2) {
         try {
             // searching cycle station
-            POI cycleStation1 = ServiceCycleRent.getNearestStation(spatial, long1, lat1, 0);
-            POI cycleStation2 = ServiceCycleRent.getNearestStation(spatial, long2, lat2, 1);
+            CycleRentService service = new CycleRentService(spatial);
+            POI cycleStation1 = service.getNearest(long1, lat1, 0);
+            POI cycleStation2 = service.getNearest(long2, lat2, 1);
 
             // pedestrian => cycle station
             PedestrianCostEvaluation evalPedestrian = new PedestrianCostEvaluation();
-            ShortestPathAlgorithm.search(spatial, lat1, long1, cycleStation1.getLatitude(),
-                    cycleStation1.getLongitude(), evalPedestrian);
+            ShortestPathAlgorithm.search(spatial, lat1, long1, cycleStation1.getGeoPoint().getLatitude(), cycleStation1
+                    .getGeoPoint().getLongitude(), evalPedestrian);
 
             // cycle station 1=> cycle station 2
             CycleCostEvaluation evalCycle = new CycleCostEvaluation();
-            ShortestPathAlgorithm.search(spatial, cycleStation1.getLatitude(), cycleStation1.getLongitude(),
-                    cycleStation2.getLatitude(), cycleStation2.getLongitude(), evalCycle);
+            ShortestPathAlgorithm.search(spatial, cycleStation1.getGeoPoint().getLatitude(), cycleStation1
+                    .getGeoPoint().getLongitude(), cycleStation2.getGeoPoint().getLatitude(), cycleStation2
+                    .getGeoPoint().getLongitude(), evalCycle);
 
             // cycle station 2 => ending point
-            String result = ShortestPathAlgorithm.search(spatial, cycleStation2.getLatitude(),
-                    cycleStation2.getLongitude(), lat2, long2, evalPedestrian);
+            List<Itinerary> path = ShortestPathAlgorithm.search(spatial, cycleStation2.getGeoPoint().getLatitude(),
+                    cycleStation2.getGeoPoint().getLongitude(), lat2, long2, evalPedestrian);
 
-            return Response.status(Status.OK).entity(result).build();
+            return Response.status(Status.OK).entity(path).build();
         } catch (Exception e) {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage() + " :" + e.getCause()).build();
         }

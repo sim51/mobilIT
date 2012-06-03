@@ -18,13 +18,18 @@
  */
 package fr.mobilit.neo4j.server.pojo;
 
+/**
+ * Class that reprensent a point of interest.
+ * 
+ * @author bsimard
+ * 
+ */
 public class POI {
 
-    private String id;
-    private String name;
-    private Double longitude;
-    private Double latitude;
-    private String geocode;
+    private String   id;
+    private String   name;
+    private GeoPoint geoPoint;
+    private String   geocode;
 
     /**
      * Constructor.
@@ -40,8 +45,7 @@ public class POI {
         super();
         this.id = id;
         this.name = name;
-        this.longitude = longitude;
-        this.latitude = latitude;
+        this.geoPoint = new GeoPoint(longitude, latitude);
         this.geocode = geocode;
     }
 
@@ -88,31 +92,17 @@ public class POI {
     }
 
     /**
-     * @return the longitude
+     * @return the geoPoint
      */
-    public Double getLongitude() {
-        return longitude;
+    public GeoPoint getGeoPoint() {
+        return geoPoint;
     }
 
     /**
-     * @param longitude the longitude to set
+     * @param geoPoint the geoPoint to set
      */
-    public void setLongitude(Double longitude) {
-        this.longitude = longitude;
-    }
-
-    /**
-     * @return the latitude
-     */
-    public Double getLatitude() {
-        return latitude;
-    }
-
-    /**
-     * @param latitude the latitude to set
-     */
-    public void setLatitude(Double latitude) {
-        this.latitude = latitude;
+    public void setGeoPoint(GeoPoint geoPoint) {
+        this.geoPoint = geoPoint;
     }
 
 }

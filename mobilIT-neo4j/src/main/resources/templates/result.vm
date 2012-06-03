@@ -1,13 +1,20 @@
-<mobilIT>
-    <cost>$cost</cost>
-    <path>
-        #foreach( $relation in $path )
-            #set($name = $Utils.getRoadName($relation))
-            #set($length = $Utils.getRoadLength($relation))
-            <step>
-                <name>$name</name>
-                <length>$length</length>
-            </step>
-        #end
-    </path>
-</mobilIT>
+{ "type": "FeatureCollection",
+  "features": [
+    #foreach( $relation in $path )
+        { "type": "Feature",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              #foreach( $seg in $relation.line )
+                [$seg.latitude, $seg.longitude]#if( $foreach.hasNext ),#end
+              #end
+            ]
+          },
+          "properties": {
+            "name": "$relation.name",
+            "length": $relation.distance
+          }
+        },
+    #end
+  ]
+}

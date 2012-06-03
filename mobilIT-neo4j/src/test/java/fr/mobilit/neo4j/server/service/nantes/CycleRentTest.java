@@ -28,7 +28,7 @@ import org.junit.Test;
 
 import fr.mobilit.neo4j.server.exception.MobilITException;
 import fr.mobilit.neo4j.server.pojo.POI;
-import fr.mobilit.neo4j.server.service.ServiceCycleRent;
+import fr.mobilit.neo4j.server.service.CycleRentService;
 import fr.mobilit.neo4j.server.util.Neo4jTestCase;
 import fr.mobilit.neo4j.server.utils.Constant;
 
@@ -41,7 +41,7 @@ public class CycleRentTest extends Neo4jTestCase {
         Iterator cycleIter = Constant.CYCLE_SERVICE.keySet().iterator();
         while (cycleIter.hasNext()) {
             String geocode = (String) cycleIter.next();
-            ServiceCycleRent service = new ServiceCycleRent(this.spatial());
+            CycleRentService service = new CycleRentService(this.spatial());
             service.getGeoService(geocode).importStation();
         }
     }
@@ -55,7 +55,7 @@ public class CycleRentTest extends Neo4jTestCase {
 
     @Test
     public void testStation() throws MobilITException {
-        ServiceCycleRent service = new ServiceCycleRent(this.spatial());
+        CycleRentService service = new CycleRentService(this.spatial());
         CycleRentImpl nantes = (CycleRentImpl) service.getGeoService(Constant.NANTES_GEO_CODE);
         Map<String, Integer> result = nantes.getStation("103");
         assertNotNull(result.get(Constant.CYCLE_AVAIBLE));
@@ -67,13 +67,13 @@ public class CycleRentTest extends Neo4jTestCase {
     public void testNearestStation() throws MobilITException {
         Double lat = new Double(-1.5569311380386353);
         Double lon = new Double(47.22245365625265);
-        ServiceCycleRent service = new ServiceCycleRent(this.spatial());
+        CycleRentService service = new CycleRentService(this.spatial());
         CycleRentImpl nantes = (CycleRentImpl) service.getGeoService(Constant.NANTES_GEO_CODE);
-        POI station = service.getNearestStation(lon, lat, 10.0, null);
+        POI station = service.getNearest(lon, lat, 10.0, null);
         assertNotNull(station);
-        station = service.getNearestStation(lon, lat, 10.0, 0);
+        station = service.getNearest(lon, lat, 10.0, 0);
         assertNotNull(station);
-        station = service.getNearestStation(lon, lat, 10.0, 1);
+        station = service.getNearest(lon, lat, 10.0, 1);
         assertNotNull(station);
     }
 

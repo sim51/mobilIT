@@ -43,16 +43,17 @@ public class Constant {
     public static final String                 NANTES_GEO_CODE          = "FR_NTS";
 
     // constant for cycle service
+    public static final String                 CYCLE_LAYER              = "cycle";
     public static final String                 CYCLE_FREE               = "free";
     public static final String                 CYCLE_AVAIBLE            = "avaible";
     public static final String                 CYCLE_TOTAL              = "total";
-    public static final String                 LAYER_CYCLE              = "cycle";
     public static final HashMap<String, Class> CYCLE_SERVICE            = new HashMap<String, Class>();
     static {
         CYCLE_SERVICE.put(NANTES_GEO_CODE, fr.mobilit.neo4j.server.service.nantes.CycleRentImpl.class);
     }
 
     // constant for parking service
+    public static final String                 PARKING_LAYER            = "parking";
     public static final String                 PARKING_FREE             = "free";
     public static final String                 PARKING_AVAIBLE          = "avaible";
     public static final String                 PARKING_TOTAL            = "total";

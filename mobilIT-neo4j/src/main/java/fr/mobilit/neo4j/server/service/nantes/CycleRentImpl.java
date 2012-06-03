@@ -87,12 +87,12 @@ public class CycleRentImpl extends AbstractCycleRent {
 
         // create layer
         EditableLayer cycleLayer;
-        if (!this.spatial.containsLayer(Constant.LAYER_CYCLE)) {
-            cycleLayer = (EditableLayer) this.spatial.createLayer(Constant.LAYER_CYCLE, SimplePointEncoder.class,
+        if (!this.spatial.containsLayer(Constant.CYCLE_LAYER)) {
+            cycleLayer = (EditableLayer) this.spatial.createLayer(Constant.CYCLE_LAYER, SimplePointEncoder.class,
                     EditableLayerImpl.class, "lon:lat");
         }
         else {
-            cycleLayer = (EditableLayer) this.spatial.getLayer(Constant.LAYER_CYCLE);
+            cycleLayer = (EditableLayer) this.spatial.getLayer(Constant.CYCLE_LAYER);
         }
         Transaction tx = this.spatial.getDatabase().beginTx();
         for (int i = 0; i < stations.size(); i++) {
@@ -100,8 +100,8 @@ public class CycleRentImpl extends AbstractCycleRent {
             POI currentStation = stations.get(i);
             Node currentNode = this.spatial.getDatabase().createNode();
             currentNode.setProperty("name", currentStation.getName());
-            currentNode.setProperty("lat", currentStation.getLatitude());
-            currentNode.setProperty("lon", currentStation.getLongitude());
+            currentNode.setProperty("lat", currentStation.getGeoPoint().getLatitude());
+            currentNode.setProperty("lon", currentStation.getGeoPoint().getLongitude());
             currentNode.setProperty("geocode", Constant.NANTES_GEO_CODE);
             currentNode.setProperty("id", currentStation.getId());
 

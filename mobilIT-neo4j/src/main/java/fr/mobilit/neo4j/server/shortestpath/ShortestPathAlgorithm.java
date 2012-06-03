@@ -19,7 +19,10 @@
 package fr.mobilit.neo4j.server.shortestpath;
 
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.velocity.Template;
@@ -38,9 +41,10 @@ import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 
 import fr.mobilit.neo4j.server.exception.MobilITException;
+import fr.mobilit.neo4j.server.pojo.GeoPoint;
+import fr.mobilit.neo4j.server.pojo.Itinerary;
 import fr.mobilit.neo4j.server.utils.MobilITRelation;
 import fr.mobilit.neo4j.server.utils.SpatialUtils;
-import fr.mobilit.neo4j.server.utils.TemplateUtils;
 
 public class ShortestPathAlgorithm {
 
@@ -56,8 +60,8 @@ public class ShortestPathAlgorithm {
      * @return
      * @throws MobilITException
      */
-    public static String search(SpatialDatabaseService spatial, Double lat1, Double long1, Double lat2, Double long2,
-            CostEvaluator<Double> eval) throws MobilITException {
+    public static List<Itinerary> search(SpatialDatabaseService spatial, Double lat1, Double long1, Double lat2,
+            Double long2, CostEvaluator<Double> eval) throws MobilITException {
         try {
             SpatialUtils service = new SpatialUtils(spatial);
             Node start;
@@ -66,7 +70,39 @@ public class ShortestPathAlgorithm {
             Dijkstra<Double> sp = new Dijkstra<Double>(0.0, start, end, eval, new DoubleAdder(),
                     new DoubleComparator(), Direction.BOTH, MobilITRelation.LINKED);
             sp.calculate();
-            return generateResponse(sp.getPathAsRelationships(), sp.getCost());
+
+            // generate the itinerary
+            List<Itinerary> itinerary = new ArrayList<Itinerary>();
+            Map<String, Integer> alreadyIn = new HashMap<String, Integer>();
+            for (Relationship relation : sp.getPathAsRelationships()) {
+                String name = (String) relation.getProperty("name", null);
+                if (name != null) {
+                    if (alreadyIn.containsKey(name)) {
+                        Integer index = alreadyIn.get(name);
+                        Itinerary path = itinerary.get(index);
+                        Double lng = (Double) relation.getEndNode().getProperty("lon", null);
+                        Double lat = (Double) relation.getEndNode().getProperty("lat", null);
+                        path.getLine().add(new GeoPoint(lng, lat));
+                        Double distance = (Double) relation.getProperty("length", 0.0);
+                        path.setDistance(path.getDistance() + distance);
+                    }
+                    else {
+                        Itinerary path = new Itinerary();
+                        path.setName(name);
+                        Double lng_1 = (Double) relation.getStartNode().getProperty("lon", null);
+                        Double lat_1 = (Double) relation.getStartNode().getProperty("lat", null);
+                        path.getLine().add(new GeoPoint(lng_1, lat_1));
+                        Double lng_2 = (Double) relation.getEndNode().getProperty("lon", null);
+                        Double lat_2 = (Double) relation.getEndNode().getProperty("lat", null);
+                        path.getLine().add(new GeoPoint(lng_2, lat_2));
+                        Double distance = (Double) relation.getProperty("length", 0.0);
+                        path.setDistance(distance);
+                        itinerary.add(path);
+                        alreadyIn.put(name, itinerary.size() - 1);
+                    }
+                }
+            }
+            return itinerary;
         } catch (MobilITException e) {
             throw e;
         }
@@ -76,11 +112,9 @@ public class ShortestPathAlgorithm {
      * Generate the http response compatible openLS with velocity template.
      * 
      * @param path
-     * @param cost
      * @return
      */
-    // TODO : doing an openLS compatible response
-    public static String generateResponse(List<Relationship> path, Double cost) {
+    public static String generateResponse(List<Itinerary> path) {
         // initialize velocity
         Properties props = new Properties();
         props.setProperty(VelocityEngine.RESOURCE_LOADER, "classpath");
@@ -92,8 +126,6 @@ public class ShortestPathAlgorithm {
         VelocityContext context = new VelocityContext();
         // put parameter for template
         context.put("path", path);
-        context.put("cost", cost);
-        context.put("Utils", TemplateUtils.class);
         // get the template
         Template template = null;
         template = Velocity.getTemplate("templates/result.vm");

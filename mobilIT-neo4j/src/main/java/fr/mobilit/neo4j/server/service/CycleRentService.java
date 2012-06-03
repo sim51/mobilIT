@@ -35,7 +35,7 @@ import fr.mobilit.neo4j.server.exception.MobilITException;
 import fr.mobilit.neo4j.server.pojo.POI;
 import fr.mobilit.neo4j.server.utils.Constant;
 
-public class ServiceCycleRent {
+public class CycleRentService {
 
     protected SpatialDatabaseService spatial;
 
@@ -44,7 +44,7 @@ public class ServiceCycleRent {
      * 
      * @param spatial
      */
-    public ServiceCycleRent(SpatialDatabaseService spatial) {
+    public CycleRentService(SpatialDatabaseService spatial) {
         super();
         this.spatial = spatial;
     }
@@ -73,8 +73,8 @@ public class ServiceCycleRent {
         }
     }
 
-    public POI getNearestStation(Double lon, Double lat, Integer status) throws MobilITException {
-        return getNearestStation(lon, lat, 2.0, status);
+    public POI getNearest(Double lon, Double lat, Integer status) throws MobilITException {
+        return getNearest(lon, lat, 2.0, status);
     }
 
     /**
@@ -86,9 +86,9 @@ public class ServiceCycleRent {
      * @param status if 0 we search a station with free cycle, if 1 with free slot and if null whatever !
      * @return
      */
-    public POI getNearestStation(Double lon, Double lat, Double distance, Integer status) throws MobilITException {
+    public POI getNearest(Double lon, Double lat, Double distance, Integer status) throws MobilITException {
         Coordinate coord = new Coordinate(lat, lon);
-        EditableLayer cycleLayer = spatial.getOrCreateEditableLayer(Constant.LAYER_CYCLE);
+        EditableLayer cycleLayer = spatial.getOrCreateEditableLayer(Constant.CYCLE_LAYER);
         //@formatter:off
         List<GeoPipeFlow> results = GeoPipeline
                 .startNearestNeighborSearch(cycleLayer, coord, distance)
