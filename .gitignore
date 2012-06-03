@@ -18,6 +18,7 @@ mobilIT-neo4j/neo4j-mobilIT.iml
 #NEO4J PLUGIN GIT IGNORE
 mobilIT-neo4j/target/
 mobilIT-neo4j/neo4j-db/
+neo/
 
 #BASH SCRIPT IGNORE
 mobilIT-script/mobilIT-osm_import/download/

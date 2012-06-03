@@ -24,8 +24,8 @@ public class CycleRentImpl extends AbstractCycleRent {
     /**
      * Nantes URL service for cycle rent.
      */
-    private final static String IMPORT_URL = "http://www.bicloo.nantesmetropole.fr/service/carto";
-    private final static String DETAIL_URL = "http://www.bicloo.nantesmetropole.fr/service/stationdetails/nantes/";
+    public final static String IMPORT_URL = "http://www.bicloo.nantesmetropole.fr/service/carto";
+    public final static String DETAIL_URL = "http://www.bicloo.nantesmetropole.fr/service/stationdetails/nantes/";
 
     /**
      * Constructor.

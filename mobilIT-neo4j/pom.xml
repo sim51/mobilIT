@@ -129,6 +129,17 @@
 			<artifactId>commons-httpclient</artifactId>
 			<version>${httpclient.version}</version>
 		</dependency>
+
+        <!-- OGC -->
+        <dependency>
+            <groupId>org.jvnet.ogc</groupId>
+            <artifactId>ols-v_1_2_0-schema</artifactId>
+            <version>1.0.3</version>
+        </dependency>
+
+
+        <!--test scope-->
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
