@@ -13,11 +13,11 @@ import org.neo4j.gis.spatial.SpatialDatabaseService;
 
 import fr.mobilit.neo4j.server.exception.MobilITException;
 import fr.mobilit.neo4j.server.pojo.POI;
-import fr.mobilit.neo4j.server.service.AbstractCycleRent;
+import fr.mobilit.neo4j.server.service.AbstractParking;
 import fr.mobilit.neo4j.server.utils.Constant;
 import fr.mobilit.neo4j.server.utils.SpatialUtils;
 
-public class ParkingImpl extends AbstractCycleRent {
+public class ParkingImpl extends AbstractParking {
 
     /**
      * Nantes URL service for cycle rent.
@@ -36,7 +36,7 @@ public class ParkingImpl extends AbstractCycleRent {
     }
 
     @Override
-    public List<POI> importStation() throws MobilITException {
+    public List<POI> importParking() throws MobilITException {
         List<POI> stations = new ArrayList<POI>();
         HttpClient client = new HttpClient();
         GetMethod get = null;
@@ -71,7 +71,7 @@ public class ParkingImpl extends AbstractCycleRent {
     }
 
     @Override
-    public Map<String, Integer> getStation(String id) throws MobilITException {
+    public Map<String, Integer> getParking(String id) throws MobilITException {
         return null;
     }
 
