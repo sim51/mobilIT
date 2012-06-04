@@ -36,6 +36,7 @@ import org.neo4j.gis.spatial.osm.OSMImporter;
 import org.neo4j.graphdb.GraphDatabaseService;
 
 import fr.mobilit.neo4j.server.service.CycleRentService;
+import fr.mobilit.neo4j.server.service.ParkingService;
 import fr.mobilit.neo4j.server.utils.Constant;
 
 /**
@@ -107,6 +108,14 @@ public class Import {
                 String geocode = (String) cycleIter.next();
                 CycleRentService service = new CycleRentService(spatial);
                 service.getGeoService(geocode).importStation();
+            }
+
+            // import parking rent POI
+            Iterator parkingIter = Constant.PARKING_SERVICE.keySet().iterator();
+            while (parkingIter.hasNext()) {
+                String geocode = (String) cycleIter.next();
+                ParkingService service = new ParkingService(spatial);
+                service.getGeoService(geocode).importParking();
             }
             return Response.status(Status.OK).build();
         } catch (Exception e) {
