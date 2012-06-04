@@ -1,16 +1,8 @@
 package fr.mobilit.neo4j.server;
 
-import net.opengis.gml.v_3_1_1.CoordType;
-import net.opengis.gml.v_3_1_1.DirectPositionType;
-import net.opengis.gml.v_3_1_1.PointType;
-import net.opengis.xls.v_1_2_0.*;
-import org.neo4j.gis.spatial.SpatialDatabaseService;
-import org.neo4j.gis.spatial.osm.OSMImporter;
-import org.neo4j.gis.spatial.osm.OSMRelation;
-import org.neo4j.graphdb.Direction;
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.index.IndexHits;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.Arrays;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -23,24 +15,37 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.Arrays;
+
+import net.opengis.gml.v_3_1_1.CoordType;
+import net.opengis.gml.v_3_1_1.PointType;
+import net.opengis.xls.v_1_2_0.AddressType;
+import net.opengis.xls.v_1_2_0.GeocodeRequestType;
+import net.opengis.xls.v_1_2_0.GeocodeResponseListType;
+import net.opengis.xls.v_1_2_0.GeocodeResponseType;
+import net.opengis.xls.v_1_2_0.GeocodedAddressType;
+import net.opengis.xls.v_1_2_0.ObjectFactory;
+import net.opengis.xls.v_1_2_0.StreetAddressType;
+import net.opengis.xls.v_1_2_0.StreetNameType;
+
+import org.neo4j.gis.spatial.SpatialDatabaseService;
+import org.neo4j.gis.spatial.osm.OSMImporter;
+import org.neo4j.gis.spatial.osm.OSMRelation;
+import org.neo4j.graphdb.Direction;
+import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.index.IndexHits;
 
 /**
- * User: noootsab
- * Date: 6/2/12
- * Time: 2:48 PM
+ * User: noootsab Date: 6/2/12 Time: 2:48 PM
  */
 @Path("/location")
 public class LocationUtility {
 
-    public JAXBContext context;
-    public Marshaller marshaller;
-    public ObjectFactory factory;
-    private GraphDatabaseService db;
+    public JAXBContext             context;
+    public Marshaller              marshaller;
+    public ObjectFactory           factory;
+    private GraphDatabaseService   db;
     private SpatialDatabaseService spatial;
-
 
     public LocationUtility(@Context GraphDatabaseService db) throws Exception {
         this.db = db;
@@ -52,7 +57,7 @@ public class LocationUtility {
     }
 
     @POST
-    @Consumes({MediaType.APPLICATION_XML})
+    @Consumes({ MediaType.APPLICATION_XML })
     @Produces(MediaType.APPLICATION_XML)
     public Response execute(JAXBElement<GeocodeRequestType> request) throws JAXBException {
 
@@ -62,8 +67,7 @@ public class LocationUtility {
             Response.status(Response.Status.BAD_REQUEST).entity("Geocode Request is missing !");
         }
 
-
-        //minimal response
+        // minimal response
         GeocodeResponseType response = new GeocodeResponseType();
         GeocodeResponseListType geocodeResponseListType = new GeocodeResponseListType();
         geocodeResponseListType.setNumberOfGeocodedAddresses(new BigInteger("0"));
@@ -71,23 +75,21 @@ public class LocationUtility {
 
         if (geocodeRequest.getAddress().size() > 0) {
             AddressType addressType = geocodeRequest.getAddress().get(0);
-            if (addressType != null
-                    && addressType.getStreetAddress() != null
+            if (addressType != null && addressType.getStreetAddress() != null
                     && addressType.getStreetAddress().getStreet().size() > 0) {
 
                 StreetNameType streetNameType1 = addressType.getStreetAddress().getStreet().get(0);
 
-                //quick and dirty implementation based on
+                // quick and dirty implementation based on
                 // one single address
                 // the name only => EXACT MATCH ONLY
-                IndexHits<Node> ways = db.index().forNodes(OSMImporter.INDEX_NAME_WAY).query("name:\"" + streetNameType1.getValue() + "\"");
+                IndexHits<Node> ways = db.index().forNodes(OSMImporter.INDEX_NAME_WAY)
+                        .query("name:\"" + streetNameType1.getValue() + "\"");
 
-                //fill response with result
+                // fill response with result
                 for (Node way : ways) {
-                    double[] bbox = (double[]) way.getRelationships(Direction.OUTGOING, OSMRelation.GEOM)
-                            .iterator()
-                            .next()
-                            .getEndNode().getProperty("bbox");
+                    double[] bbox = (double[]) way.getRelationships(Direction.OUTGOING, OSMRelation.GEOM).iterator()
+                            .next().getEndNode().getProperty("bbox");
 
                     GeocodedAddressType geocodedAddressType = new GeocodedAddressType();
 
@@ -109,10 +111,9 @@ public class LocationUtility {
 
                     geocodeResponseListType.setGeocodedAddress(Arrays.asList(geocodedAddressType));
 
-                    //I hate the BigInteger API !
-                    geocodeResponseListType.setNumberOfGeocodedAddresses(
-                            geocodeResponseListType.getNumberOfGeocodedAddresses().add(new BigInteger("1"))
-                    );
+                    // I hate the BigInteger API !
+                    geocodeResponseListType.setNumberOfGeocodedAddresses(geocodeResponseListType
+                            .getNumberOfGeocodedAddresses().add(new BigInteger("1")));
                 }
 
             }

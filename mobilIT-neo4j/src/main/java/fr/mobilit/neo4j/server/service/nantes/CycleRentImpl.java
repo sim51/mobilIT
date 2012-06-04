@@ -94,6 +94,7 @@ public class CycleRentImpl extends AbstractCycleRent {
         else {
             cycleLayer = (EditableLayer) this.spatial.getLayer(Constant.CYCLE_LAYER);
         }
+
         Transaction tx = this.spatial.getDatabase().beginTx();
         for (int i = 0; i < stations.size(); i++) {
             // create data node

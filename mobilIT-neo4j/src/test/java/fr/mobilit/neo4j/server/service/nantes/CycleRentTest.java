@@ -100,6 +100,9 @@ public class CycleRentTest extends Neo4jTestCase {
 
     @Test
     public void testNearestStation() throws MobilITException {
+        CycleRentImpl nantes = new CycleRentImpl(this.spatial());
+        List<POI> bicloo = nantes.importStation();
+
         Double lat = new Double(-1.5569311380386353);
         Double lon = new Double(47.22245365625265);
         CycleRentService service = new CycleRentService(this.spatial());
