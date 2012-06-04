@@ -7,17 +7,13 @@ import java.util.Map;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.neo4j.gis.spatial.EditableLayer;
-import org.neo4j.gis.spatial.EditableLayerImpl;
 import org.neo4j.gis.spatial.SpatialDatabaseService;
-import org.neo4j.gis.spatial.encoders.SimplePointEncoder;
-import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.Transaction;
 
 import fr.mobilit.neo4j.server.exception.MobilITException;
 import fr.mobilit.neo4j.server.pojo.POI;
 import fr.mobilit.neo4j.server.service.AbstractCycleRent;
 import fr.mobilit.neo4j.server.utils.Constant;
+import fr.mobilit.neo4j.server.utils.SpatialUtils;
 
 public class CycleRentImpl extends AbstractCycleRent {
 
@@ -84,33 +80,8 @@ public class CycleRentImpl extends AbstractCycleRent {
         } finally {
             get.releaseConnection();
         }
-
-        // create layer
-        EditableLayer cycleLayer;
-        if (!this.spatial.containsLayer(Constant.CYCLE_LAYER)) {
-            cycleLayer = (EditableLayer) this.spatial.createLayer(Constant.CYCLE_LAYER, SimplePointEncoder.class,
-                    EditableLayerImpl.class, "lon:lat");
-        }
-        else {
-            cycleLayer = (EditableLayer) this.spatial.getLayer(Constant.CYCLE_LAYER);
-        }
-
-        Transaction tx = this.spatial.getDatabase().beginTx();
-        for (int i = 0; i < stations.size(); i++) {
-            // create data node
-            POI currentStation = stations.get(i);
-            Node currentNode = this.spatial.getDatabase().createNode();
-            currentNode.setProperty("name", currentStation.getName());
-            currentNode.setProperty("lat", currentStation.getGeoPoint().getLatitude());
-            currentNode.setProperty("lon", currentStation.getGeoPoint().getLongitude());
-            currentNode.setProperty("geocode", Constant.NANTES_GEO_CODE);
-            currentNode.setProperty("id", currentStation.getId());
-
-            // save geom into layer
-            cycleLayer.add(currentNode);
-        }
-        tx.success();
-        tx.finish();
+        SpatialUtils spatial = new SpatialUtils(this.spatial);
+        spatial.savePOIToLayer(Constant.CYCLE_LAYER, stations, Constant.NANTES_GEO_CODE);
         return stations;
     }
 

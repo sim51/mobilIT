@@ -2,9 +2,12 @@ package fr.mobilit.neo4j.server.utils;
 
 import java.util.List;
 
+import org.neo4j.gis.spatial.EditableLayer;
+import org.neo4j.gis.spatial.EditableLayerImpl;
 import org.neo4j.gis.spatial.Layer;
 import org.neo4j.gis.spatial.SpatialDatabaseRecord;
 import org.neo4j.gis.spatial.SpatialDatabaseService;
+import org.neo4j.gis.spatial.encoders.SimplePointEncoder;
 import org.neo4j.gis.spatial.pipes.GeoPipeFlow;
 import org.neo4j.gis.spatial.pipes.GeoPipeline;
 import org.neo4j.graphdb.Direction;
@@ -17,6 +20,7 @@ import org.neo4j.graphdb.Transaction;
 import com.vividsolutions.jts.geom.Coordinate;
 
 import fr.mobilit.neo4j.server.exception.MobilITException;
+import fr.mobilit.neo4j.server.pojo.POI;
 
 public class SpatialUtils {
 
@@ -92,7 +96,7 @@ public class SpatialUtils {
     }
 
     /**
-     * Find a child node from its parent and relation. m
+     * Find a child node from its parent and relation.
      * 
      * @param name
      * @param parent
@@ -107,6 +111,42 @@ public class SpatialUtils {
             }
         }
         return null;
+    }
+
+    /**
+     * Save all POI into the specified layer.
+     * 
+     * @param layerName
+     * @param list
+     * @param geocode
+     */
+    public void savePOIToLayer(String layerName, List<POI> list, String geocode) {
+        // create layer
+        EditableLayer layer;
+        if (!this.spatial.containsLayer(layerName)) {
+            layer = (EditableLayer) this.spatial.createLayer(layerName, SimplePointEncoder.class,
+                    EditableLayerImpl.class, "lon:lat");
+        }
+        else {
+            layer = (EditableLayer) this.spatial.getLayer(layerName);
+        }
+
+        Transaction tx = this.spatial.getDatabase().beginTx();
+        for (int i = 0; i < list.size(); i++) {
+            // create data node
+            POI currentStation = list.get(i);
+            Node currentNode = this.spatial.getDatabase().createNode();
+            currentNode.setProperty("name", currentStation.getName());
+            currentNode.setProperty("lat", currentStation.getGeoPoint().getLatitude());
+            currentNode.setProperty("lon", currentStation.getGeoPoint().getLongitude());
+            currentNode.setProperty("geocode", geocode);
+            currentNode.setProperty("id", currentStation.getId());
+
+            // save geom into layer
+            layer.add(currentNode);
+        }
+        tx.success();
+        tx.finish();
     }
 
 }
