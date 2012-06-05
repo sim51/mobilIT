@@ -113,7 +113,7 @@ public class Import {
             // import parking rent POI
             Iterator parkingIter = Constant.PARKING_SERVICE.keySet().iterator();
             while (parkingIter.hasNext()) {
-                String geocode = (String) cycleIter.next();
+                String geocode = (String) parkingIter.next();
                 ParkingService service = new ParkingService(spatial);
                 service.getGeoService(geocode).importParking();
             }
