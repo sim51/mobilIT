@@ -19,6 +19,7 @@
 package fr.mobilit.neo4j.server.service.nantes;
 
 import java.util.List;
+import java.util.Map;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -27,6 +28,7 @@ import org.junit.Test;
 import fr.mobilit.neo4j.server.exception.MobilITException;
 import fr.mobilit.neo4j.server.pojo.POI;
 import fr.mobilit.neo4j.server.util.Neo4jTestCase;
+import fr.mobilit.neo4j.server.utils.Constant;
 
 public class ParkingTest extends Neo4jTestCase {
 
@@ -38,13 +40,16 @@ public class ParkingTest extends Neo4jTestCase {
     @Test
     public void testImport() throws MobilITException {
         ParkingImpl nantes = new ParkingImpl(this.spatial());
-        List<POI> parking = nantes.importStation();
+        List<POI> parking = nantes.importParking();
         assertEquals(51, parking.size());
     }
 
     @Test
     public void testStation() throws MobilITException {
-        assertNull(null);
+        ParkingImpl nantes = new ParkingImpl(this.spatial());
+        Map<String, Integer> result = nantes.getParking("288");
+        assertNotNull(result.get(Constant.PARKING_FREE));
+        assertNotNull(result.get(Constant.PARKING_TOTAL));
     }
 
     @Test

@@ -1,6 +1,7 @@
 package fr.mobilit.neo4j.server.service.nantes;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -72,7 +73,77 @@ public class ParkingImpl extends AbstractParking {
 
     @Override
     public Map<String, Integer> getParking(String id) throws MobilITException {
-        return null;
-    }
+        HashMap<String, Integer> result = new HashMap<String, Integer>();
+        HttpClient client = new HttpClient();
+        GetMethod get = null;
+        try {
+            // we do the http call and parse the xml response
+            get = new GetMethod(DETAIL_URL);
+            client.executeMethod(get);
+            javax.xml.stream.XMLInputFactory factory = javax.xml.stream.XMLInputFactory.newInstance();
+            javax.xml.stream.XMLStreamReader parser = factory.createXMLStreamReader(get.getResponseBodyAsStream());
+            ArrayList<String> currentXMLTags = new ArrayList<String>();
+            int depth = 0;
+            Boolean again = Boolean.TRUE;
+            String ident = null;
+            Integer free = null;
+            Integer total = null;
+            while (again) {
+                int event = parser.next();
+                if (event == javax.xml.stream.XMLStreamConstants.END_DOCUMENT) {
+                    break;
+                }
+                switch (event) {
+                    case javax.xml.stream.XMLStreamConstants.START_ELEMENT:
+                        currentXMLTags.add(depth, parser.getLocalName());
+                        String tagPath = currentXMLTags.toString();
+                        if (tagPath.equals("[opendata, answer, data, Groupes_Parking, Groupe_Parking]")) {
+                            ident = null;
+                            free = null;
+                            total = null;
 
+                        }
+                        if (tagPath.equals("[opendata, answer, data, Groupes_Parking, Groupe_Parking, Grp_disponible]")) {
+                            free = Integer.valueOf(parser.getElementText());
+                            currentXMLTags.remove(depth);
+                            depth--;
+                        }
+                        if (tagPath
+                                .equals("[opendata, answer, data, Groupes_Parking, Groupe_Parking, Grp_exploitation]")) {
+                            total = Integer.valueOf(parser.getElementText());
+                            currentXMLTags.remove(depth);
+                            depth--;
+
+                        }
+                        if (tagPath.equals("[opendata, answer, data, Groupes_Parking, Groupe_Parking, IdObj]")) {
+                            ident = parser.getElementText();
+                            currentXMLTags.remove(depth);
+                            depth--;
+
+                        }
+                        depth++;
+                        break;
+                    case javax.xml.stream.XMLStreamConstants.END_ELEMENT:
+                        if (currentXMLTags.toString().equals(
+                                "[opendata, answer, data, Groupes_Parking, Groupe_Parking]")) {
+                            if (ident.equals(id)) {
+                                result.put(Constant.PARKING_FREE, free);
+                                result.put(Constant.PARKING_TOTAL, total);
+                                again = Boolean.FALSE;
+                            }
+                        }
+                        depth--;
+                        currentXMLTags.remove(depth);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        } catch (Exception e) {
+            throw new MobilITException(e.getMessage(), e.getCause());
+        } finally {
+            get.releaseConnection();
+        }
+        return result;
+    }
 }

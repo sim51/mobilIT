@@ -55,7 +55,6 @@ public class Constant {
     // constant for parking service
     public static final String                 PARKING_LAYER            = "parking";
     public static final String                 PARKING_FREE             = "free";
-    public static final String                 PARKING_AVAIBLE          = "avaible";
     public static final String                 PARKING_TOTAL            = "total";
     public static final String                 PARKING_CYCLE            = "cycle";
     public static final HashMap<String, Class> PARKING_SERVICE          = new HashMap<String, Class>();
