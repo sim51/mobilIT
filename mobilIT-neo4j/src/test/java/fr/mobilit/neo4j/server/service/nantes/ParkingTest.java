@@ -27,6 +27,7 @@ import org.junit.Test;
 
 import fr.mobilit.neo4j.server.exception.MobilITException;
 import fr.mobilit.neo4j.server.pojo.POI;
+import fr.mobilit.neo4j.server.service.ParkingService;
 import fr.mobilit.neo4j.server.util.Neo4jTestCase;
 import fr.mobilit.neo4j.server.utils.Constant;
 
@@ -54,7 +55,16 @@ public class ParkingTest extends Neo4jTestCase {
 
     @Test
     public void testNearestStation() throws MobilITException {
-        assertNull(null);
+        ParkingImpl nantes = new ParkingImpl(this.spatial());
+        nantes.importParking();
+
+        Double lat = new Double(-1.5569311380386353);
+        Double lon = new Double(47.22245365625265);
+        ParkingService service = new ParkingService(this.spatial());
+        POI station = service.getNearest(lon, lat, 100.0, 0);
+        assertNotNull(station);
+        station = service.getNearest(lon, lat, 100.0, null);
+        assertNotNull(station);
     }
 
     @AfterClass

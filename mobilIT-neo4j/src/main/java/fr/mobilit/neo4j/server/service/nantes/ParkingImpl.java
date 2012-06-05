@@ -1,5 +1,7 @@
 package fr.mobilit.neo4j.server.service.nantes;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,8 +47,9 @@ public class ParkingImpl extends AbstractParking {
             // we do the http call and parse the xml response
             get = new GetMethod(IMPORT_PARKING_URL);
             client.executeMethod(get);
-            String json = get.getResponseBodyAsString();
-            JSONArray list = (JSONArray) JSONValue.parse(json);
+            InputStream json = get.getResponseBodyAsStream();
+            InputStreamReader reader = new InputStreamReader(json);
+            JSONArray list = (JSONArray) JSONValue.parse(reader);
             for (int i = 0; i < list.size(); i++) {
                 Map map = (JSONObject) list.get(i);
                 Double category = (Double) map.get("CATEGORIE");

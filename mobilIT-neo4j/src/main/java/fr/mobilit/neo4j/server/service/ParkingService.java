@@ -87,10 +87,10 @@ public class ParkingService {
      */
     public POI getNearest(Double lon, Double lat, Double distance, Integer status) throws MobilITException {
         Coordinate coord = new Coordinate(lat, lon);
-        EditableLayer cycleLayer = spatial.getOrCreateEditableLayer(Constant.PARKING_LAYER);
+        EditableLayer layer = spatial.getOrCreateEditableLayer(Constant.PARKING_LAYER);
         //@formatter:off
         List<GeoPipeFlow> results = GeoPipeline
-                .startNearestNeighborSearch(cycleLayer, coord, distance)
+                .startNearestNeighborSearch(layer, coord, distance)
                 .sort("Distance")
                 .toList();
         //@formatter:on
@@ -105,28 +105,20 @@ public class ParkingService {
             String name = (String) node.getProperty("name", null);
             Double lng = (Double) node.getProperty("lon", null);
             Double lati = (Double) node.getProperty("lat", null);
-            if (status != null && (status == 0 || status == 1)) {
+            if (status != null) {
                 AbstractParking service = this.getGeoService(geocode);
                 HashMap<String, Integer> places = (HashMap<String, Integer>) service.getParking(id);
-                switch (status) {
-                // check if there is free cycle (start point)
-                    case 0:
-                        Integer freeCycle = places.get(Constant.CYCLE_AVAIBLE);
-                        if (freeCycle > 0) {
-                            nearest = new POI(id, name, lng, lati, geocode);
-                            find = true;
-                        }
-                        break;
-                    // check if there is free slot (end point)
-                    case 1:
-                        Integer freeSlot = places.get(Constant.CYCLE_FREE);
-                        if (freeSlot > 0) {
-                            nearest = new POI(id, name, lng, lati, geocode);
-                            find = true;
-                        }
-                        break;
-                    default:
-                        break;
+                if (places.isEmpty()) {
+                    // here there is no information
+                    nearest = new POI(id, name, lng, lati, geocode);
+                    find = true;
+                }
+                else {
+                    Integer free = places.get(Constant.PARKING_FREE);
+                    if (free != null && free > 0) {
+                        nearest = new POI(id, name, lng, lati, geocode);
+                        find = true;
+                    }
                 }
             }
             else {

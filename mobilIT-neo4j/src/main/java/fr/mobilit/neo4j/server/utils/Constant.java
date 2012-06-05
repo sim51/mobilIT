@@ -59,6 +59,6 @@ public class Constant {
     public static final String                 PARKING_CYCLE            = "cycle";
     public static final HashMap<String, Class> PARKING_SERVICE          = new HashMap<String, Class>();
     static {
-        // CYCLE_SERVICE.put(NANTES_GEO_CODE, fr.mobilit.neo4j.server.service.nantes.CycleRentImpl.class);
+        PARKING_SERVICE.put(NANTES_GEO_CODE, fr.mobilit.neo4j.server.service.nantes.ParkingImpl.class);
     }
 }
