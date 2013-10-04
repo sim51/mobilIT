@@ -20,7 +20,6 @@ package fr.mobilit.neo4j.server.utils;
 
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
-
 import org.neo4j.server.logging.Logger;
 
 public class Cache {
@@ -29,7 +28,7 @@ public class Cache {
     private net.sf.ehcache.Cache cache;
     private static Cache         uniqueInstance;
     private static final String  CACHENAME = "play";
-    private static Logger        LOGGER    = Logger.getLogger(Cache.class.getName());
+    private static Logger LOGGER    = Logger.getLogger(Cache.class.getName());
 
     private Cache() {
         this.cacheManager = CacheManager.create();

@@ -49,6 +49,28 @@ public class SearchPathTest extends Neo4jTestCase {
         assertEquals(200, response.getStatus());
     }
 
+    @Test
+    public  void testCyclePath() {
+        Double lat1 = new Double(-1.5569311380386353);
+        Double lon1 = new Double(47.22245365625265);
+        Double lat2 = new Double(-1.5539807081222534);
+        Double lon2 = new Double(47.21921469525527);
+        Long time = System.currentTimeMillis();
+        Response response = searchPlugin.cycle(lat1, lon1, lat2, lon2);
+        assertEquals(200, response.getStatus());
+    }
+
+    @Test
+    public  void testPedestrianPath() {
+        Double lat1 = new Double(-1.5569311380386353);
+        Double lon1 = new Double(47.22245365625265);
+        Double lat2 = new Double(-1.5539807081222534);
+        Double lon2 = new Double(47.21921469525527);
+        Long time = System.currentTimeMillis();
+        Response response = searchPlugin.pedestrian(lat1, lon1, lat2, lon2);
+        assertEquals(200, response.getStatus());
+    }
+
     @After
     public void tearDown() throws Exception {
         super.tearDown();
