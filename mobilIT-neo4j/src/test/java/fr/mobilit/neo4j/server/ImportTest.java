@@ -54,6 +54,7 @@ public class ImportTest extends Neo4jTestCase {
         String files = Thread.currentThread().getContextClassLoader().getResource("osm/nantes.osm").getFile();
         Response response = importPlugin.osm(files);
         assertEquals(200, response.getStatus());
+
         Layer layer = this.spatial().getLayer(Constant.LAYER_OSM);
         assertNotNull("OSM Layer index should not be null", layer.getIndex());
         assertNotNull("OSM Layer index envelope should not be null", layer.getIndex().getBoundingBox());

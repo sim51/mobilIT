@@ -1,5 +1,24 @@
+/**
+ * This file is part of MobilIT.
+ *
+ * MobilIT is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * MobilIT is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with MobilIT. If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * @See https://github.com/sim51/mobilIT
+ */
 package fr.mobilit.neo4j.server.service.nantes;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -17,6 +36,7 @@ import org.neo4j.gis.spatial.SpatialDatabaseService;
 import fr.mobilit.neo4j.server.exception.MobilITException;
 import fr.mobilit.neo4j.server.pojo.POI;
 import fr.mobilit.neo4j.server.service.AbstractParking;
+import fr.mobilit.neo4j.server.utils.Cache;
 import fr.mobilit.neo4j.server.utils.Constant;
 import fr.mobilit.neo4j.server.utils.SpatialUtils;
 
@@ -27,6 +47,8 @@ public class ParkingImpl extends AbstractParking {
      */
     private final static String IMPORT_PARKING_URL = "http://datastore.opendatasoft.com/api/fetch/dataset/equipementsdeplacelementnantes2012?format=json";
     private final static String DETAIL_URL         = "http://data.nantes.fr/api/getDisponibiliteParkingsPublics/1.0/ATMPSTDOTJCNTJ2";
+    private final static String CACHE_KEY          = "NTS_PARKING";
+    private final static int    CACHE_DURATION     = 300;
 
     /**
      * Constructor.
@@ -80,11 +102,19 @@ public class ParkingImpl extends AbstractParking {
         HttpClient client = new HttpClient();
         GetMethod get = null;
         try {
-            // we do the http call and parse the xml response
-            get = new GetMethod(DETAIL_URL);
-            client.executeMethod(get);
+            // we llok in cache if there the response !
+            String xmlResponse = (String) Cache.getInstance().get(CACHE_KEY);
+            if (xmlResponse != null && xmlResponse.isEmpty()) {
+                // we do the http call and put it into ehcache & parse the xml response
+                get = new GetMethod(DETAIL_URL);
+                client.executeMethod(get);
+                xmlResponse = get.getResponseBodyAsString();
+                Cache.getInstance().add(CACHE_KEY, xmlResponse, CACHE_DURATION);
+            }
+
+            InputStream is = new ByteArrayInputStream(xmlResponse.getBytes());
             javax.xml.stream.XMLInputFactory factory = javax.xml.stream.XMLInputFactory.newInstance();
-            javax.xml.stream.XMLStreamReader parser = factory.createXMLStreamReader(get.getResponseBodyAsStream());
+            javax.xml.stream.XMLStreamReader parser = factory.createXMLStreamReader(is);
             ArrayList<String> currentXMLTags = new ArrayList<String>();
             int depth = 0;
             Boolean again = Boolean.TRUE;

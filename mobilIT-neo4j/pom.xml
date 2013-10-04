@@ -59,8 +59,8 @@
 	<!-- = Project properties = -->
 	<!-- ====================== -->
 	<properties>
-		<neo4j.version>1.8.M03</neo4j.version>
-		<neo4j.spatial.version>0.8</neo4j.spatial.version>
+		<neo4j.version>1.8.3</neo4j.version>
+		<neo4j.spatial.version>0.9</neo4j.spatial.version>
 		<velocity.version>1.7</velocity.version>
 		<httpclient.version>3.1</httpclient.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -130,18 +130,26 @@
 			<version>${httpclient.version}</version>
 		</dependency>
 
-		<!-- OGC -->
-		<dependency>
-			<groupId>org.jvnet.ogc</groupId>
-			<artifactId>ols-v_1_2_0-schema</artifactId>
-			<version>1.0.3</version>
-		</dependency>
-
+		<!-- JSON -->
 		<dependency>
 			<groupId>com.googlecode.json-simple</groupId>
 			<artifactId>json-simple</artifactId>
 			<version>1.1.1</version>
 		</dependency>
+
+        <!-- OGC -->
+        <dependency>
+            <groupId>org.jvnet.ogc</groupId>
+            <artifactId>ols-v_1_2_0-schema</artifactId>
+            <version>1.0.3</version>
+        </dependency>
+
+        <!-- Memcached -->
+        <dependency>
+            <groupId>net.sf.ehcache</groupId>
+            <artifactId>ehcache</artifactId>
+            <version>2.7.4</version>
+        </dependency>
 
 		<!--test scope -->
 		<dependency>
@@ -232,18 +240,22 @@
 	<!-- ==================== -->
 	<repositories>
 		<repository>
-			<id>maven2-repository.dev.java.net</id>
-			<url>http://download.java.net/maven/2/</url>
-			<layout>default</layout>
-		</repository>
-		<repository>
 			<id>osgeo</id>
 			<url>http://download.osgeo.org/webdav/geotools/</url>
 		</repository>
 		<repository>
 			<id>neo4j-public-repository</id>
-			<url>http://m2.neo4j.org</url>
+			<url>http://m2.neo4j.org/content/groups/public/</url>
+		</repository>
+		<repository>
+			<id>sourceforge</id>
+			<url>http://oss.sonatype.org/content/groups/sourceforge/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
 		</repository>
 	</repositories>
-
 </project> 
