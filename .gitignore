@@ -5,6 +5,8 @@
 mobilIT-neo4j/.classpath
 mobilIT-neo4j/.project
 mobilIT-neo4j/.settings/
+mobilIT-neo4j/src/main/resources/META-INF/
+neo4j-db/
 mobilIT-play/.classpath
 mobilIT-play/.project
 mobilIT-play/.settings/

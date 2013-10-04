@@ -58,7 +58,5 @@ public class Constant {
     public static final String                 PARKING_TOTAL            = "total";
     public static final String                 PARKING_CYCLE            = "cycle";
     public static final HashMap<String, Class> PARKING_SERVICE          = new HashMap<String, Class>();
-    static {
-        PARKING_SERVICE.put(NANTES_GEO_CODE, fr.mobilit.neo4j.server.service.nantes.ParkingImpl.class);
-    }
+
 }
