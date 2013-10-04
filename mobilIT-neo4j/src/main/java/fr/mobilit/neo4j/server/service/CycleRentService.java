@@ -110,7 +110,7 @@ public class CycleRentService {
                 AbstractCycleRent service = this.getGeoService(geocode);
                 HashMap<String, Integer> places = (HashMap<String, Integer>) service.getStation(id);
                 switch (status) {
-                // check if there is free cycle (start point)
+                    // check if there is free cycle (start point)
                     case 0:
                         Integer freeCycle = places.get(Constant.CYCLE_AVAIBLE);
                         if (freeCycle > 0) {
