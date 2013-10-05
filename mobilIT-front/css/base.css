@@ -1,0 +1,10 @@
+body {
+    padding-top: 40px;
+    position: relative;
+}
+
+footer p {
+    text-align: center;
+}
+
+#map{ height: 400px;}
