@@ -25,7 +25,7 @@ angular.module('Services', [])
         }
     })
 
-    /* nominatim service */
+    /* Neo4j service */
     .factory('Neo4j', function ($http, $location, $rootScope, Config) {
         return{
             search: function (type, lat1, long1, lat2, long2) {

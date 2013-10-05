@@ -19,6 +19,9 @@ function FormCtrl($scope, Nominatim, Neo4j) {
     $scope.toMarker.addTo($scope.map);
 
 
+    
+
+
     // center view
     $scope.map.setView([0, 0], 15);
 
@@ -47,13 +50,12 @@ function FormCtrl($scope, Nominatim, Neo4j) {
                 $scope.toMarker = new L.marker(new L.LatLng(locationResp[0].lat, locationResp[0].lon));
                 $scope.toMarker.addTo($scope.map);
                 $scope.map.setView([locationResp[0].lat, locationResp[0].lon], 15);
-
             }
         });
     };
 
-    $scope.search = function () {
-        Neo4j.search('car',
+    $scope.search = function (mode) {
+        Neo4j.search(mode,
                 $scope.fromMarker.getLatLng().lat,
                 $scope.fromMarker.getLatLng().lng,
                 $scope.toMarker.getLatLng().lat,
@@ -63,8 +65,15 @@ function FormCtrl($scope, Nominatim, Neo4j) {
                 if ($scope.geojsonLayer)
                     $scope.map.removeLayer($scope.geojsonLayer);
 
+                var myStyle = {
+                    "color": "#ff7800",
+                    "weight": 5,
+                    "opacity": 0.65
+                };
+
                 // geojson layer
                 $scope.geojsonLayer = new L.GeoJSON(null, {
+                    color: 'red',
                     onEachFeature: function (feature, layer) {
                         if (feature.properties) {
                             var popupString = '<div class="popup">';
