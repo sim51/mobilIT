@@ -41,6 +41,10 @@ public class Constant {
 
     // constante for geo zone
     public static final String                 NANTES_GEO_CODE          = "FR_NTS";
+    public static final String                 NAMUR_GEO_CODE           = "BE_NAM";
+
+    // constance for JCDecaux API
+    public static final String                 JCD_API_KEY              = "c5e55a68bcffa6f022704df6db2813e0ce621e9b";
 
     // constant for cycle service
     public static final String                 CYCLE_LAYER              = "cycle";
@@ -50,6 +54,7 @@ public class Constant {
     public static final HashMap<String, Class> CYCLE_SERVICE            = new HashMap<String, Class>();
     static {
         CYCLE_SERVICE.put(NANTES_GEO_CODE, fr.mobilit.neo4j.server.service.nantes.CycleRentImpl.class);
+        CYCLE_SERVICE.put(NAMUR_GEO_CODE, fr.mobilit.neo4j.server.service.namur.CycleRentImpl.class);
     }
 
     // constant for parking service

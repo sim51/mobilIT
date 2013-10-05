@@ -3,15 +3,18 @@ package fr.mobilit.neo4j.server.service.namur;
 import com.google.gson.stream.JsonReader;
 import fr.mobilit.neo4j.server.exception.MobilITException;
 import fr.mobilit.neo4j.server.pojo.POI;
-import fr.mobilit.neo4j.server.service.jcdecaux.JCDecauxCycleRentImpl;
+import fr.mobilit.neo4j.server.service.CycleRentService;
 import fr.mobilit.neo4j.server.util.Neo4jTestCase;
+import fr.mobilit.neo4j.server.utils.Constant;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -30,8 +33,8 @@ public class CycleRentTest extends Neo4jTestCase {
         GetMethod get = null;
         try {
             // we do the http call and parse the xml response
-            JCDecauxCycleRentImpl jcDecauxCycleRent = new JCDecauxCycleRentImpl(this.spatial());
-            get = new GetMethod(jcDecauxCycleRent.getImportUrl());
+            CycleRentImpl cycleRent = new CycleRentImpl(this.spatial());
+            get = new GetMethod(cycleRent.getImportUrl());
             client.executeMethod(get);
             JsonReader reader = new JsonReader(new InputStreamReader(get.getResponseBodyAsStream(), "UTF-8"));
             reader.beginArray();
@@ -54,8 +57,57 @@ public class CycleRentTest extends Neo4jTestCase {
 
     @Test
     public void testImport() throws MobilITException {
-        JCDecauxCycleRentImpl jcdecaux = new JCDecauxCycleRentImpl(this.spatial());
-        List<POI> bicloo = jcdecaux.importStation();
-        assertEquals(numberOfStations, bicloo.size());
+        CycleRentService service = new CycleRentService(this.spatial());
+        CycleRentImpl namur = (CycleRentImpl) service.getGeoService(Constant.NAMUR_GEO_CODE);
+        List<POI> libia = namur.importStation();
+        assertEquals(numberOfStations, libia.size());
+    }
+
+    @Test
+    public void testStation() throws MobilITException {
+        CycleRentService service = new CycleRentService(this.spatial());
+        CycleRentImpl namur = (CycleRentImpl) service.getGeoService(Constant.NAMUR_GEO_CODE);
+        Map<String, Integer> result = namur.getStation("" + numberOfStations);
+        assertNotNull(result.get(Constant.CYCLE_AVAIBLE));
+        assertNotNull(result.get(Constant.CYCLE_FREE));
+        assertNotNull(result.get(Constant.CYCLE_TOTAL));
+    }
+
+    /*
+    @Test
+    public void testNearestStation() throws MobilITException {
+        CycleRentService service = new CycleRentService(this.spatial());
+        CycleRentImpl namur = (CycleRentImpl) service.getGeoService(Constant.NAMUR_GEO_CODE);
+        namur.importStation();
+        Double lat = new Double(50.46424);
+        Double lon = new Double(4.8652);
+        POI station = service.getNearest(lon, lat, null);
+        assertNotNull(station);
+        station = service.getNearest(lon, lat, 10.0, 0);
+        assertNotNull(station);
+        station = service.getNearest(lon, lat, 10.0, 1);
+        assertNotNull(station);
+    }*/
+
+    @Test
+    public void testNearestStation() throws MobilITException {
+        CycleRentImpl nantes = new CycleRentImpl(this.spatial());
+        nantes.importStation();
+
+        Double lon = new Double(50.46424);
+        Double lat = new Double(4.8652);
+        CycleRentService service = new CycleRentService(this.spatial());
+        POI station = service.getNearest(lon, lat, null);
+        assertNotNull(station);
+        station = service.getNearest(lon, lat, 10.0, 0);
+        assertNotNull(station);
+        station = service.getNearest(lon, lat, 10.0, 1);
+        assertNotNull(station);
+    }
+
+
+    @AfterClass
+    public void tearDown() throws Exception {
+        super.tearDown();
     }
 }
