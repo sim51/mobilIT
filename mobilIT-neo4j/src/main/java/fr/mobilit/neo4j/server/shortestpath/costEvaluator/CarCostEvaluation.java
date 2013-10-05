@@ -29,13 +29,12 @@ public class CarCostEvaluation implements CostEvaluator<Double> {
     @Override
     public Double getCost(Relationship relationship, Direction direction) {
         Boolean isMotor = false;
-        if (relationship.getProperty("motor_vehicle", "").equals("yes")) {
+        if (relationship.getProperty("motor_vehicle", "no").equals("yes")) {
             isMotor = true;
         }
         Boolean isGoodWay = false;
         String oneway = (String) relationship.getProperty("oneway", "");
-        if (oneway.equals("BOTH") || (direction.equals(Direction.OUTGOING) && oneway.equals("FORWARD"))
-                || (direction.equals(Direction.INCOMING) && oneway.equals("BACKWARD"))) {
+        if (oneway.equals("BOTH") || (direction.equals(Direction.OUTGOING) && oneway.equals("FORWARD")) || (direction.equals(Direction.INCOMING) && oneway.equals("BACKWARD"))) {
             isGoodWay = true;
         }
         if (isMotor && isGoodWay) {

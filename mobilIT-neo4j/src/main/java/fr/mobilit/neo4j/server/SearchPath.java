@@ -26,6 +26,7 @@ import fr.mobilit.neo4j.server.shortestpath.costEvaluator.CarCostEvaluation;
 import fr.mobilit.neo4j.server.shortestpath.costEvaluator.CycleCostEvaluation;
 import fr.mobilit.neo4j.server.shortestpath.costEvaluator.PedestrianCostEvaluation;
 import org.neo4j.gis.spatial.SpatialDatabaseService;
+import org.neo4j.graphalgo.GraphAlgoFactory;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.server.logging.Logger;
 

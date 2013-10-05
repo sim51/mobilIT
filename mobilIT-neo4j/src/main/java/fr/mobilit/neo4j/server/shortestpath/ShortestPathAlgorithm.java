@@ -74,32 +74,17 @@ public class ShortestPathAlgorithm {
             List<Itinerary> itinerary = new ArrayList<Itinerary>();
             Map<String, Integer> alreadyIn = new HashMap<String, Integer>();
             for (Relationship relation : sp.getPathAsRelationships()) {
-                String name = (String) relation.getProperty("name", null);
-                if (name != null) {
-                    if (alreadyIn.containsKey(name)) {
-                        Integer index = alreadyIn.get(name);
-                        Itinerary path = itinerary.get(index);
-                        Double lng = (Double) relation.getEndNode().getProperty("lon", null);
-                        Double lat = (Double) relation.getEndNode().getProperty("lat", null);
-                        path.getLine().add(new GeoPoint(lng, lat));
-                        Double distance = (Double) relation.getProperty("length", 0.0);
-                        path.setDistance(path.getDistance() + distance);
-                    }
-                    else {
-                        Itinerary path = new Itinerary();
-                        path.setName(name);
-                        Double lng_1 = (Double) relation.getStartNode().getProperty("lon", null);
-                        Double lat_1 = (Double) relation.getStartNode().getProperty("lat", null);
-                        path.getLine().add(new GeoPoint(lng_1, lat_1));
-                        Double lng_2 = (Double) relation.getEndNode().getProperty("lon", null);
-                        Double lat_2 = (Double) relation.getEndNode().getProperty("lat", null);
-                        path.getLine().add(new GeoPoint(lng_2, lat_2));
-                        Double distance = (Double) relation.getProperty("length", 0.0);
-                        path.setDistance(distance);
-                        itinerary.add(path);
-                        alreadyIn.put(name, itinerary.size() - 1);
-                    }
-                }
+                Itinerary path = new Itinerary();
+                path.setName((String) relation.getProperty("name", "undefined"));
+                Double lng_1 = (Double) relation.getStartNode().getProperty("lon", null);
+                Double lat_1 = (Double) relation.getStartNode().getProperty("lat", null);
+                path.getLine().add(new GeoPoint(lng_1, lat_1));
+                Double lng_2 = (Double) relation.getEndNode().getProperty("lon", null);
+                Double lat_2 = (Double) relation.getEndNode().getProperty("lat", null);
+                path.getLine().add(new GeoPoint(lng_2, lat_2));
+                Double distance = (Double) relation.getProperty("length", 0.0);
+                path.setDistance(distance);
+                itinerary.add(path);
             }
             return itinerary;
         } catch (MobilITException e) {

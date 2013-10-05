@@ -30,16 +30,13 @@ public class CycleCostEvaluation implements CostEvaluator<Double> {
     public Double getCost(Relationship relationship, Direction direction) {
         // is a way for cycle ie a motor way or a cycle way ?
         Boolean isCycle = false;
-        if (relationship.getProperty("motor_vehicle", "").equals("yes")
-                || relationship.getProperty("cycleway", "no").equals("no")) {
+        if (relationship.getProperty("motor_vehicle", "yes").equals("yes") || !relationship.getProperty("cycleway", "no").equals("no")) {
             isCycle = true;
         }
         // look at the direction of the way
         Boolean isGoodWay = false;
         String oneway = (String) relationship.getProperty("oneway", "");
-        String cycleway = (String) relationship.getProperty("cycleway", "");
-        if (oneway.equals("BOTH") || (direction.equals(Direction.OUTGOING) && oneway.equals("FORWARD"))
-                || (direction.equals(Direction.INCOMING) && oneway.equals("BACKWARD"))) {
+        if (oneway.equals("BOTH") || (direction.equals(Direction.OUTGOING) && oneway.equals("FORWARD")) || (direction.equals(Direction.INCOMING) && oneway.equals("BACKWARD"))) {
             isGoodWay = true;
         }
         // if the way can be take in cycle and it has the good direction, we calculate the cost, else cost is infinity

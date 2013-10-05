@@ -61,7 +61,7 @@ public class NamurSearchPathTest extends Neo4jTestCase {
                 nearestRoad = relation;
         }
         System.out.println("nearest way found is " +  nearestRoad.getProperty("name"));
-        assertEquals("Chaussée de Marche", nearestRoad.getProperty("name"));
+        assertEquals("Rue de Fer", nearestRoad.getProperty("name"));
     }
 
     @Test
@@ -80,7 +80,7 @@ public class NamurSearchPathTest extends Neo4jTestCase {
                 nearestRoad = relation;
         }
         System.out.println("nearest way found is " +  nearestRoad.getProperty("name"));
-       assertEquals("", nearestRoad.getProperty("name"));
+       assertEquals("Rue Ponty", nearestRoad.getProperty("name"));
     }
 
     @Test
@@ -91,6 +91,28 @@ public class NamurSearchPathTest extends Neo4jTestCase {
         Double lon2 = new Double(4.874691600000006);
         Long time = System.currentTimeMillis();
         Response response = searchPlugin.car(lat1, lon1, lat2, lon2);
+        assertEquals(200, response.getStatus());
+    }
+
+    @Test
+    public void testCyclePath() {
+        Double lat1 = new Double(50.4661913);
+        Double lon1 = new Double(4.8653434999999945);
+        Double lat2 = new Double(50.467381);
+        Double lon2 = new Double(4.863633499999992);
+        Long time = System.currentTimeMillis();
+        Response response = searchPlugin.cycle(lat1, lon1, lat2, lon2);
+        assertEquals(200, response.getStatus());
+    }
+
+    @Test
+    public void testPedestrianPath() {
+        Double lat1 = new Double(50.4661913);
+        Double lon1 = new Double(4.8653434999999945);
+        Double lat2 = new Double(50.4646013);
+        Double lon2 = new Double(4.874691600000006);
+        Long time = System.currentTimeMillis();
+        Response response = searchPlugin.pedestrian(lat1, lon1, lat2, lon2);
         assertEquals(200, response.getStatus());
     }
 
