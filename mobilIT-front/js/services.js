@@ -3,7 +3,7 @@
 angular.module('Services', [])
     .value('Config', {
         nominatimurl: 'http://nominatim.openstreetmap.org',
-        neo4jurl: 'http://localhost:7474/mobilit/',
+        neo4jurl: 'http://localhost:7474/mobilit',
         SUCCES: 'TRUE'
     })
 
@@ -29,7 +29,7 @@ angular.module('Services', [])
     .factory('Neo4j', function ($http, $location, $rootScope, Config) {
         return{
             search: function (type, lat1, long1, lat2, long2) {
-                var url = Config.nominatimurl + '/search/' + type + '?lat1=' + lat1 + '&long1=' + long1 + '&lat2=' + lat2 + '&long2=' +  long2 + '&json_callback=JSON_CALLBACK';
+                var url = Config.neo4jurl + '/search/' + type + '?lat1=' + lat1 + '&long1=' + long1 + '&lat2=' + lat2 + '&long2=' +  long2 + '&json_callback=JSON_CALLBACK';
                 return $http.jsonp(url)
                     .then(function (response) {
                         if (response.status == 200) {

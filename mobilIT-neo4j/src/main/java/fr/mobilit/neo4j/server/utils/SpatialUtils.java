@@ -1,55 +1,45 @@
 package fr.mobilit.neo4j.server.utils;
 
-import java.util.List;
-
+import com.vividsolutions.jts.geom.Coordinate;
+import fr.mobilit.neo4j.server.exception.MobilITException;
+import fr.mobilit.neo4j.server.pojo.POI;
 import org.neo4j.gis.spatial.EditableLayer;
 import org.neo4j.gis.spatial.EditableLayerImpl;
-import org.neo4j.gis.spatial.Layer;
 import org.neo4j.gis.spatial.SpatialDatabaseRecord;
 import org.neo4j.gis.spatial.SpatialDatabaseService;
 import org.neo4j.gis.spatial.encoders.SimplePointEncoder;
+import org.neo4j.gis.spatial.osm.OSMLayer;
 import org.neo4j.gis.spatial.pipes.GeoPipeFlow;
 import org.neo4j.gis.spatial.pipes.GeoPipeline;
-import org.neo4j.graphdb.Direction;
-import org.neo4j.graphdb.DynamicRelationshipType;
-import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.Relationship;
-import org.neo4j.graphdb.RelationshipType;
-import org.neo4j.graphdb.Transaction;
+import org.neo4j.graphdb.*;
 
-import com.vividsolutions.jts.geom.Coordinate;
-
-import fr.mobilit.neo4j.server.exception.MobilITException;
-import fr.mobilit.neo4j.server.pojo.POI;
+import java.util.List;
 
 public class SpatialUtils {
 
     private SpatialDatabaseService spatial;
-    private Layer                  osm;
+    private OSMLayer osm;
 
     /**
      * Constructor.
      */
     public SpatialUtils(SpatialDatabaseService spatial) {
         this.spatial = spatial;
-        this.osm = spatial.getLayer(Constant.LAYER_OSM);
+        this.osm = (OSMLayer) spatial.getLayer(Constant.LAYER_OSM);
     }
 
     /**
      * Find the nearest OSM way node from a coordinate (lng, lat).
-     * 
+     *
      * @param lat
      * @param lon
      * @return
      * @throws MobilITException
      */
     public Node findNearestWay(Double lat, Double lon) throws MobilITException {
-        Coordinate coord = new Coordinate(lat, lon);
+        Coordinate coord = new Coordinate(lon, lat);
         //@formatter:off
-        List<GeoPipeFlow> results = GeoPipeline
-                .startNearestNeighborLatLonSearch(osm, coord, 0.2)
-                .sort("OrthodromicDistance")
-                .toList();
+        List<GeoPipeFlow> results = GeoPipeline.startNearestNeighborSearch(osm, coord, 0.2).toList();
         //@formatter:on
         Node osmPoint = null;
         if (results.size() > 0) {
@@ -60,7 +50,7 @@ public class SpatialUtils {
                 Node node = dbRecord.getGeomNode();
                 osmPoint = node.getSingleRelationship(DynamicRelationshipType.withName("GEOM"), Direction.INCOMING)
                         .getStartNode();
-                if (osmPoint.getRelationships(DynamicRelationshipType.withName("LINKED")).iterator().hasNext()) {
+                if (osmPoint.getRelationships(DynamicRelationshipType.withName("LINKED")).iterator().hasNext() && osmPoint.getRelationships(DynamicRelationshipType.withName("LINKED")).iterator().next().hasProperty("highway") && osmPoint.getRelationships(DynamicRelationshipType.withName("LINKED")).iterator().next().getProperty("highway").equals("primary")) {
                     find = true;
                 }
                 i++;
@@ -74,7 +64,7 @@ public class SpatialUtils {
 
     /**
      * Method to get or create a node if it doesnt exist.
-     * 
+     *
      * @param name
      * @param type
      * @param parent
@@ -97,7 +87,7 @@ public class SpatialUtils {
 
     /**
      * Find a child node from its parent and relation.
-     * 
+     *
      * @param name
      * @param parent
      * @param relType
@@ -115,7 +105,7 @@ public class SpatialUtils {
 
     /**
      * Save all POI into the specified layer.
-     * 
+     *
      * @param layerName
      * @param list
      * @param geocode
@@ -126,8 +116,7 @@ public class SpatialUtils {
         if (!this.spatial.containsLayer(layerName)) {
             layer = (EditableLayer) this.spatial.createLayer(layerName, SimplePointEncoder.class,
                     EditableLayerImpl.class, "lon:lat");
-        }
-        else {
+        } else {
             layer = (EditableLayer) this.spatial.getLayer(layerName);
         }
 

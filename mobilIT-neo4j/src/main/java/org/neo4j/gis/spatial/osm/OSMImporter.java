@@ -99,6 +99,7 @@ public class OSMImporter {
         SpatialDatabaseService spatialDatabase = new SpatialDatabaseService(database);
         OSMLayer layer = (OSMLayer) spatialDatabase.getOrCreateLayer(layerName, OSMGeometryEncoder.class,
                 OSMLayer.class);
+
         // TODO: The next line creates the relationship between the dataset and
         // layer, but this seems more like a side-effect and should be done
         // explicitly

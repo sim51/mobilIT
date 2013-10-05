@@ -18,19 +18,6 @@
  */
 package fr.mobilit.neo4j.server;
 
-import java.util.List;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
-import org.neo4j.gis.spatial.SpatialDatabaseService;
-import org.neo4j.graphdb.GraphDatabaseService;
-
 import fr.mobilit.neo4j.server.pojo.Itinerary;
 import fr.mobilit.neo4j.server.pojo.POI;
 import fr.mobilit.neo4j.server.service.CycleRentService;
@@ -38,12 +25,24 @@ import fr.mobilit.neo4j.server.shortestpath.ShortestPathAlgorithm;
 import fr.mobilit.neo4j.server.shortestpath.costEvaluator.CarCostEvaluation;
 import fr.mobilit.neo4j.server.shortestpath.costEvaluator.CycleCostEvaluation;
 import fr.mobilit.neo4j.server.shortestpath.costEvaluator.PedestrianCostEvaluation;
+import org.neo4j.gis.spatial.SpatialDatabaseService;
+import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.server.logging.Logger;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.util.List;
 
 @Path("/search")
 public class SearchPath {
 
     private final GraphDatabaseService   db;
     private final SpatialDatabaseService spatial;
+    private final Logger logger = Logger.getLogger(SearchPath.class);
 
     /**
      * Constructor.
@@ -56,12 +55,16 @@ public class SearchPath {
     }
 
     @GET
-    @Produces(MediaType.APPLICATION_XML)
     @Path("/car")
-    public Response car(Double lat1, Double long1, Double lat2, Double long2) {
+    public Response car(    @QueryParam("lat1") Double lat1,
+                            @QueryParam("long1") Double long1,
+                            @QueryParam("lat2") Double lat2,
+                            @QueryParam("long2") Double long2) {
+        logger.info("lat1 : " + lat1 + " | long1 : " + long1);
         try {
             CarCostEvaluation eval = new CarCostEvaluation();
             List<Itinerary> path = ShortestPathAlgorithm.search(spatial, lat1, long1, lat2, long2, eval);
+            logger.info("Path size is : " + path.size());
             return Response.status(Status.OK).entity(ShortestPathAlgorithm.generateResponse(path)).build();
         } catch (Exception e) {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage() + " :" + e.getCause()).build();
@@ -69,9 +72,11 @@ public class SearchPath {
     }
 
     @GET
-    @Produces(MediaType.APPLICATION_XML)
     @Path("/searchpath/cycle")
-    public Response cycle(Double lat1, Double long1, Double lat2, Double long2) {
+    public Response cycle( @QueryParam("lat1") Double lat1,
+                           @QueryParam("long1") Double long1,
+                           @QueryParam("lat2") Double lat2,
+                           @QueryParam("long2") Double long2) {
         try {
             CycleCostEvaluation eval = new CycleCostEvaluation();
             List<Itinerary> path = ShortestPathAlgorithm.search(spatial, lat1, long1, lat2, long2, eval);
@@ -82,9 +87,11 @@ public class SearchPath {
     }
 
     @GET
-    @Produces(MediaType.APPLICATION_XML)
     @Path("/searchpath/pedestrian")
-    public Response pedestrian(Double lat1, Double long1, Double lat2, Double long2) {
+    public Response pedestrian( @QueryParam("lat1") Double lat1,
+                                @QueryParam("long1") Double long1,
+                                @QueryParam("lat2") Double lat2,
+                                @QueryParam("long2") Double long2) {
         try {
             PedestrianCostEvaluation eval = new PedestrianCostEvaluation();
             List<Itinerary> path = ShortestPathAlgorithm.search(spatial, lat1, long1, lat2, long2, eval);
@@ -95,9 +102,11 @@ public class SearchPath {
     }
 
     @GET
-    @Produces(MediaType.APPLICATION_XML)
     @Path("/searchpath/cycle/rent")
-    public Response cycleRent(Double lat1, Double long1, Double lat2, Double long2) {
+    public Response cycleRent( @QueryParam("lat1") Double lat1,
+                               @QueryParam("long1") Double long1,
+                               @QueryParam("lat2") Double lat2,
+                               @QueryParam("long2") Double long2) {
         try {
             // searching cycle station
             CycleRentService service = new CycleRentService(spatial);

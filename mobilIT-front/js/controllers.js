@@ -1,6 +1,6 @@
 'use strict';
 
-function FormCtrl($scope, Nominatim) {
+function FormCtrl($scope, Nominatim, Neo4j) {
     //construct the map
     $scope.map = new L.Map('map');
     var cloudmade = new L.TileLayer('http://{s}.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/997/256/{z}/{x}/{y}.png', {
@@ -49,13 +49,17 @@ function FormCtrl($scope, Nominatim) {
         });
     };
 
+    $scope.search = function() {
+        Neo4j.search(   'car',
+                        $scope.fromMarker.getLatLng().lat,
+                        $scope.fromMarker.getLatLng().lng,
+                        $scope.toMarker.getLatLng().lat,
+                        $scope.toMarker.getLatLng().lng
+        ).then(function(response){
 
-}
+        });
+    };
 
-function SearchCtrl($scope, $rootScope, $nominatim) {
-}
-
-function DetailCtrl($scope, $rootScope, $nominatim) {
 }
 
 /*

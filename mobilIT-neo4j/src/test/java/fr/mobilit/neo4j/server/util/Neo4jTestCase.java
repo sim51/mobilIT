@@ -35,7 +35,7 @@ import org.neo4j.kernel.impl.nioneo.store.PropertyStore;
  */
 public abstract class Neo4jTestCase extends TestCase {
 
-    private static File            dbPath = new File("neo4j-db");
+    private static File            dbPath = new File("neo4j-test");
     private GraphDatabaseService   graphDb;
     private SpatialDatabaseService spatial;
     private Transaction            tx;
