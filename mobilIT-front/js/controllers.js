@@ -11,26 +11,29 @@ function FormCtrl($scope, Nominatim, Neo4j) {
     $scope.map.addLayer(cloudmade);
 
     // from marker
-    $scope.fromMarker =  L.marker(new L.LatLng(0,0));
+    $scope.fromMarker = L.marker(new L.LatLng(0, 0));
     $scope.fromMarker.addTo($scope.map);
+
     // to marker
-    $scope.toMarker =  L.marker(new L.LatLng(0,0));
+    $scope.toMarker = L.marker(new L.LatLng(0, 0));
     $scope.toMarker.addTo($scope.map);
 
+
+    // center view
     $scope.map.setView([0, 0], 15);
 
-    navigator.geolocation.getCurrentPosition(function(position) {
+    navigator.geolocation.getCurrentPosition(function (position) {
         $scope.map.removeLayer($scope.fromMarker);
-        $scope.fromMarker =  new L.marker(new L.LatLng(position.coords.latitude, position.coords.longitude));
+        $scope.fromMarker = new L.marker(new L.LatLng(position.coords.latitude, position.coords.longitude));
         $scope.fromMarker.addTo($scope.map);
         $scope.map.setView([position.coords.latitude, position.coords.longitude], 15);
     });
 
     $scope.locateFrom = function () {
-        Nominatim.locate($scope.from).then(function(locationResp){
-            if(locationResp[0]){
+        Nominatim.locate($scope.from).then(function (locationResp) {
+            if (locationResp[0]) {
                 $scope.map.removeLayer($scope.fromMarker);
-                $scope.fromMarker =  new L.marker(new L.LatLng(locationResp[0].lat,locationResp[0].lon));
+                $scope.fromMarker = new L.marker(new L.LatLng(locationResp[0].lat, locationResp[0].lon));
                 $scope.fromMarker.addTo($scope.map);
                 $scope.map.setView([locationResp[0].lat, locationResp[0].lon], 15);
             }
@@ -38,10 +41,10 @@ function FormCtrl($scope, Nominatim, Neo4j) {
     };
 
     $scope.locateTo = function () {
-        Nominatim.locate($scope.to).then(function(locationResp){
-            if(locationResp[0]){
+        Nominatim.locate($scope.to).then(function (locationResp) {
+            if (locationResp[0]) {
                 $scope.map.removeLayer($scope.toMarker);
-                $scope.toMarker =  new L.marker(new L.LatLng(locationResp[0].lat,locationResp[0].lon));
+                $scope.toMarker = new L.marker(new L.LatLng(locationResp[0].lat, locationResp[0].lon));
                 $scope.toMarker.addTo($scope.map);
                 $scope.map.setView([locationResp[0].lat, locationResp[0].lon], 15);
 
@@ -49,13 +52,18 @@ function FormCtrl($scope, Nominatim, Neo4j) {
         });
     };
 
-    $scope.search = function() {
-        Neo4j.search(   'car',
+    $scope.search = function () {
+        Neo4j.search('car',
                 $scope.fromMarker.getLatLng().lat,
                 $scope.fromMarker.getLatLng().lng,
                 $scope.toMarker.getLatLng().lat,
                 $scope.toMarker.getLatLng().lng
-            ).then(function(response){
+            ).then(function (response) {
+
+                if ($scope.geojsonLayer)
+                    $scope.map.removeLayer($scope.geojsonLayer);
+
+                // geojson layer
                 $scope.geojsonLayer = new L.GeoJSON(null, {
                     onEachFeature: function (feature, layer) {
                         if (feature.properties) {

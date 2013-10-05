@@ -75,7 +75,8 @@ public class SearchPath {
     }
 
     @GET
-    @Path("/searchpath/cycle")
+    @Produces({MediaType.APPLICATION_JSON})
+    @Path("/cycle")
     public Response cycle( @QueryParam("lat1") Double lat1,
                            @QueryParam("long1") Double long1,
                            @QueryParam("lat2") Double lat2,
@@ -83,14 +84,15 @@ public class SearchPath {
         try {
             CycleCostEvaluation eval = new CycleCostEvaluation();
             List<Itinerary> path = ShortestPathAlgorithm.search(spatial, lat1, long1, lat2, long2, eval);
-            return Response.status(Status.OK).entity(path).build();
+            return Response.status(Status.OK).entity(ShortestPathAlgorithm.generateResponse(path)).build();
         } catch (Exception e) {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage() + " :" + e.getCause()).build();
         }
     }
 
     @GET
-    @Path("/searchpath/pedestrian")
+    @Produces({MediaType.APPLICATION_JSON})
+    @Path("/pedestrian")
     public Response pedestrian( @QueryParam("lat1") Double lat1,
                                 @QueryParam("long1") Double long1,
                                 @QueryParam("lat2") Double lat2,
@@ -98,14 +100,15 @@ public class SearchPath {
         try {
             PedestrianCostEvaluation eval = new PedestrianCostEvaluation();
             List<Itinerary> path = ShortestPathAlgorithm.search(spatial, lat1, long1, lat2, long2, eval);
-            return Response.status(Status.OK).entity(path).build();
+            return Response.status(Status.OK).entity(ShortestPathAlgorithm.generateResponse(path)).build();
         } catch (Exception e) {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage() + " :" + e.getCause()).build();
         }
     }
 
     @GET
-    @Path("/searchpath/cycle/rent")
+    @Produces({MediaType.APPLICATION_JSON})
+    @Path("/cycle/rent")
     public Response cycleRent( @QueryParam("lat1") Double lat1,
                                @QueryParam("long1") Double long1,
                                @QueryParam("lat2") Double lat2,
@@ -131,7 +134,7 @@ public class SearchPath {
             List<Itinerary> path = ShortestPathAlgorithm.search(spatial, cycleStation2.getGeoPoint().getLatitude(),
                     cycleStation2.getGeoPoint().getLongitude(), lat2, long2, evalPedestrian);
 
-            return Response.status(Status.OK).entity(path).build();
+            return Response.status(Status.OK).entity(ShortestPathAlgorithm.generateResponse(path)).build();
         } catch (Exception e) {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage() + " :" + e.getCause()).build();
         }
