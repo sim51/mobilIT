@@ -47,8 +47,9 @@ public class NamurSearchPathTest extends Neo4jTestCase {
 
     @Test
     public void testFindNearestWay1() throws MobilITException, CQLException {
-        Double lat = new Double(50.4705314);
-        Double lon = new Double(4.825353000000007);
+        // 48 rue de fer, namur, belgique
+        Double lat = new Double(50.4661913);
+        Double lon = new Double(4.8653434999999945);
         Long startTime = System.currentTimeMillis();
         Node node = new SpatialUtils(this.spatial()).findNearestWay(lat, lon);
         Long endTime = System.currentTimeMillis();
@@ -59,13 +60,15 @@ public class NamurSearchPathTest extends Neo4jTestCase {
             if (relation.getProperty("name", null) != null)
                 nearestRoad = relation;
         }
+        System.out.println("nearest way found is " +  nearestRoad.getProperty("name"));
         assertEquals("Chaussée de Marche", nearestRoad.getProperty("name"));
     }
 
     @Test
     public void testFindNearestWay2() throws MobilITException, CQLException {
-        Double lat = new Double(50.4673823);
-        Double lon = new Double(4.86544649999999);
+        // rue ponty, namur, belgique
+        Double lat = new Double(50.4646013);
+        Double lon = new Double(4.874691600000006);
         Long startTime = System.currentTimeMillis();
         Node node = new SpatialUtils(this.spatial()).findNearestWay(lat, lon);
         Long endTime = System.currentTimeMillis();
@@ -76,15 +79,16 @@ public class NamurSearchPathTest extends Neo4jTestCase {
             if (relation.getProperty("name", null) != null)
                 nearestRoad = relation;
         }
-       // assertEquals("", nearestRoad.getProperty("name"));
+        System.out.println("nearest way found is " +  nearestRoad.getProperty("name"));
+       assertEquals("", nearestRoad.getProperty("name"));
     }
 
     @Test
     public void testCarPath() {
-        Double lat1 = new Double(50.4721675);
-        Double lon1 = new Double(4.825353000000007);
-        Double lat2 = new Double(50.4673823);
-        Double lon2 = new Double(4.86561549999999);
+        Double lat1 = new Double(50.4661913);
+        Double lon1 = new Double(4.8653434999999945);
+        Double lat2 = new Double(50.4646013);
+        Double lon2 = new Double(4.874691600000006);
         Long time = System.currentTimeMillis();
         Response response = searchPlugin.car(lat1, lon1, lat2, lon2);
         assertEquals(200, response.getStatus());

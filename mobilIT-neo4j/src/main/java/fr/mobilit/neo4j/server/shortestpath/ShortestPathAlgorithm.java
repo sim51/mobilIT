@@ -64,8 +64,7 @@ public class ShortestPathAlgorithm {
             Double long2, CostEvaluator<Double> eval) throws MobilITException {
         try {
             SpatialUtils service = new SpatialUtils(spatial);
-            Node start;
-            start = service.findNearestWay(lat1, long1);
+            Node start = service.findNearestWay(lat1, long1);
             Node end = service.findNearestWay(lat2, long2);
             Dijkstra<Double> sp = new Dijkstra<Double>(0.0, start, end, eval, new DoubleAdder(),
                     new DoubleComparator(), Direction.BOTH, MobilITRelation.LINKED);

@@ -56,7 +56,7 @@ function FormCtrl($scope, Nominatim, Neo4j) {
                         $scope.toMarker.getLatLng().lat,
                         $scope.toMarker.getLatLng().lng
         ).then(function(response){
-
+                L.geoJson(response).addTo($scope.map);
         });
     };
 

@@ -39,7 +39,7 @@ public class SpatialUtils {
     public Node findNearestWay(Double lat, Double lon) throws MobilITException {
         Coordinate coord = new Coordinate(lon, lat);
         //@formatter:off
-        List<GeoPipeFlow> results = GeoPipeline.startNearestNeighborSearch(osm, coord, 0.2).toList();
+        List<GeoPipeFlow> results = GeoPipeline.startNearestNeighborSearch(osm, coord, 0.2).sort("Distance").toList();
         //@formatter:on
         Node osmPoint = null;
         if (results.size() > 0) {
