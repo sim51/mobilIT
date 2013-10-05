@@ -15,20 +15,18 @@
             <input type="submit" />
         </form>
 	</div>
-
 </div>
 
 <div class="row-fluid">
-    <a class="button-primary" ng-click="search('car')">GO (car)</a>
+    <a class="btn btn-primary" ng-click="search()">GO</a>
+
+    <a class="btn btn-primary" ng-click="changeDisplayMode('cycle')">cacher/montrer vélo</a>
+
+    <a class="btn btn-primary" ng-click="changeDisplayMode('pedestrian')">cacher/montrer piéton</a>
+
+    <a class="btn btn-primary" ng-click="changeDisplayMode('car')">cacher/montrer voiture</a>
 </div>
 
-<div class="row-fluid">
-    <a class="button-primary" ng-click="search('cycle')">GO (cycle)</a>
-</div>
-
-<div class="row-fluid">
-    <a class="button-primary" ng-click="search('pedestrian')">GO (pedestrian)</a>
-</div>
 
 <div class="row-fluid">
         <div id="map"></div>

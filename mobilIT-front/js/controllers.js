@@ -18,12 +18,20 @@ function FormCtrl($scope, Nominatim, Neo4j) {
     $scope.toMarker = L.marker(new L.LatLng(0, 0));
     $scope.toMarker.addTo($scope.map);
 
-
-    
-
-
     // center view
     $scope.map.setView([0, 0], 15);
+
+    $scope.geojsonLayers = [];
+    $scope.gesjsonDatas = [];
+    $scope.displayMode = [];
+
+    var modeOfTransportList = ['car', 'cycle', 'pedestrian'];
+
+    var modeOfTransportColors = {
+        'car': '#FFA500',
+        'cycle': '#00FFFF',
+        'pedestrian': '#FF00FF'
+    };
 
     navigator.geolocation.getCurrentPosition(function (position) {
         $scope.map.removeLayer($scope.fromMarker);
@@ -54,47 +62,77 @@ function FormCtrl($scope, Nominatim, Neo4j) {
         });
     };
 
-    $scope.search = function (mode) {
+    $scope.searchForMode = function (mode) {
         Neo4j.search(mode,
                 $scope.fromMarker.getLatLng().lat,
                 $scope.fromMarker.getLatLng().lng,
                 $scope.toMarker.getLatLng().lat,
                 $scope.toMarker.getLatLng().lng
             ).then(function (response) {
-
-                if ($scope.geojsonLayer)
-                    $scope.map.removeLayer($scope.geojsonLayer);
-
-                var myStyle = {
-                    "color": "#ff7800",
-                    "weight": 5,
-                    "opacity": 0.65
-                };
-
-                // geojson layer
-                $scope.geojsonLayer = new L.GeoJSON(null, {
-                    color: 'red',
-                    onEachFeature: function (feature, layer) {
-                        if (feature.properties) {
-                            var popupString = '<div class="popup">';
-                            for (var k in feature.properties) {
-                                var v = feature.properties[k];
-                                popupString += k + ': ' + v + '<br />';
-                            }
-                            popupString += '</div>';
-                            layer.bindPopup(popupString, {
-                                maxHeight: 200
-                            });
-                        }
-                    }
-                });
-                $scope.map.addLayer($scope.geojsonLayer);
-                $scope.geojsonLayer.addData(response);
-                $scope.map.fitBounds($scope.geojsonLayer.getBounds());
-            }
-        );
+                $scope.gesjsonDatas[mode] = response;
+                $scope.undiplayLayer(mode);
+                $scope.diplayLayer(mode);
+            });
     };
 
+    $scope.search = function () {
+        for (var x in modeOfTransportList) {
+            $scope.searchForMode(modeOfTransportList[x]);
+        }
+    };
+
+    $scope.undiplayLayer = function (aModeOfTransport) {
+        console.log("action undisplay 2");
+        if ($scope.geojsonLayers[aModeOfTransport]) {
+            console.log("action undisplay 3");
+            $scope.map.removeLayer($scope.geojsonLayers[aModeOfTransport]);
+        }
+        $scope.displayMode[aModeOfTransport] = false;
+    };
+
+    $scope.diplayLayer = function (aModeOfTransport) {
+        if($scope.gesjsonDatas[aModeOfTransport]) {
+            $scope.undiplayLayer[aModeOfTransport];
+ 
+            var geojsonLayerStyle = {
+                'color': modeOfTransportColors[aModeOfTransport],
+            };
+
+            // geojson layer
+            $scope.geojsonLayers[aModeOfTransport] = new L.GeoJSON(null, {
+                style: geojsonLayerStyle,
+                onEachFeature: function (feature, layer) {
+                    if (feature.properties) {
+                        var popupString = '<div class="popup">';
+                        for (var k in feature.properties) {
+                            var v = feature.properties[k];
+                            popupString += k + ': ' + v + '<br />';
+                        }
+                        popupString += '</div>';
+                        layer.bindPopup(popupString, {
+                            maxHeight: 200
+                        });
+                    }
+                }
+            });
+            $scope.map.addLayer($scope.geojsonLayers[aModeOfTransport]);
+            $scope.geojsonLayers[aModeOfTransport].addData($scope.gesjsonDatas[aModeOfTransport]);
+            $scope.map.fitBounds($scope.geojsonLayers[aModeOfTransport].getBounds());
+            $scope.displayMode[aModeOfTransport] = true;
+        }
+    }; 
+
+    $scope.changeDisplayMode = function (aModeOfTransport) {
+        console.log("klkfdlk");
+        if ($scope.displayMode[aModeOfTransport]) {
+            console.log("action undisplay");
+            $scope.undiplayLayer(aModeOfTransport);
+        }
+        else {
+            console.log("action display");
+            $scope.diplayLayer(aModeOfTransport);
+        }
+    };
 }
 
 /*
