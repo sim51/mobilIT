@@ -50,7 +50,7 @@ public class SpatialUtils {
                 Node node = dbRecord.getGeomNode();
                 osmPoint = node.getSingleRelationship(DynamicRelationshipType.withName("GEOM"), Direction.INCOMING)
                         .getStartNode();
-                if (osmPoint.getRelationships(DynamicRelationshipType.withName("LINKED")).iterator().hasNext() && osmPoint.getRelationships(DynamicRelationshipType.withName("LINKED")).iterator().next().hasProperty("highway") && osmPoint.getRelationships(DynamicRelationshipType.withName("LINKED")).iterator().next().getProperty("highway").equals("primary")) {
+                if (osmPoint.getRelationships(DynamicRelationshipType.withName("LINKED")).iterator().hasNext() && osmPoint.getRelationships(DynamicRelationshipType.withName("LINKED")).iterator().next().hasProperty("highway")) {
                     find = true;
                 }
                 i++;

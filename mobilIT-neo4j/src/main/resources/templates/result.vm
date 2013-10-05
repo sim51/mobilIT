@@ -6,7 +6,7 @@
             "type": "LineString",
             "coordinates": [
               #foreach( $seg in $relation.line )
-                [$seg.latitude, $seg.longitude]#if( $foreach.hasNext ),#end
+                [$seg.longitude, $seg.latitude]#if( $foreach.hasNext ),#end
               #end
             ]
           },
@@ -14,7 +14,10 @@
             "name": "$relation.name",
             "length": $relation.distance
           }
-        },
+        }
+        #if(!$foreach.last)
+            ,
+        #end
     #end
   ]
 }

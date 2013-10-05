@@ -51,13 +51,31 @@ function FormCtrl($scope, Nominatim, Neo4j) {
 
     $scope.search = function() {
         Neo4j.search(   'car',
-                        $scope.fromMarker.getLatLng().lat,
-                        $scope.fromMarker.getLatLng().lng,
-                        $scope.toMarker.getLatLng().lat,
-                        $scope.toMarker.getLatLng().lng
-        ).then(function(response){
-                L.geoJson(response).addTo($scope.map);
-        });
+                $scope.fromMarker.getLatLng().lat,
+                $scope.fromMarker.getLatLng().lng,
+                $scope.toMarker.getLatLng().lat,
+                $scope.toMarker.getLatLng().lng
+            ).then(function(response){
+                $scope.geojsonLayer = new L.GeoJSON(null, {
+                    onEachFeature: function (feature, layer) {
+                        if (feature.properties) {
+                            var popupString = '<div class="popup">';
+                            for (var k in feature.properties) {
+                                var v = feature.properties[k];
+                                popupString += k + ': ' + v + '<br />';
+                            }
+                            popupString += '</div>';
+                            layer.bindPopup(popupString, {
+                                maxHeight: 200
+                            });
+                        }
+                    }
+                });
+                $scope.map.addLayer($scope.geojsonLayer);
+                $scope.geojsonLayer.addData(response);
+                $scope.map.fitBounds($scope.geojsonLayer.getBounds());
+            }
+        );
     };
 
 }

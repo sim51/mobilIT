@@ -31,8 +31,10 @@ import org.neo4j.server.logging.Logger;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.util.List;
@@ -55,6 +57,7 @@ public class SearchPath {
     }
 
     @GET
+    @Produces({MediaType.APPLICATION_JSON})
     @Path("/car")
     public Response car(    @QueryParam("lat1") Double lat1,
                             @QueryParam("long1") Double long1,

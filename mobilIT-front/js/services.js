@@ -30,7 +30,7 @@ angular.module('Services', [])
         return{
             search: function (type, lat1, long1, lat2, long2) {
                 var url = Config.neo4jurl + '/search/' + type + '?lat1=' + lat1 + '&long1=' + long1 + '&lat2=' + lat2 + '&long2=' +  long2 ;
-                return $http.jsonp(url)
+                return $http.get(url)
                     .then(function (response) {
                         if (response.status == 200) {
                             return response.data;
