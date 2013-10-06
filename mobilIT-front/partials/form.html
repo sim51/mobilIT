@@ -26,17 +26,16 @@
 
 <div id="result" class="row-fluid" ng-show="displayResultToolBar">
 
-    <a id="cycle" class="span4 btn btn-primary" ng-click="changeDisplayMode('cycle')" ng-class="{disabled : !displayMode['cycle']}">
+    <a id="cycle" class="span4 btn btn-cycle" ng-click="changeDisplayMode('cycle')" ng-class="{disabled : !displayMode['cycle']}">
         <h3>Vélo</h3>
         <ul class="unstyled">
             <li>{{distance['cycle']}} Km</li>
             <li>{{time['cycle'] | time}} Minutes</li>
             <li>0 Kg CO2</li>
         </ul>
-
     </a>
 
-    <a id="pedestrian" class="span4 btn btn-primary" ng-click="changeDisplayMode('pedestrian')" ng-class="{disabled : !displayMode['pedestrian']}">
+    <a  class="span4 btn btn-primary" ng-click="changeDisplayMode('pedestrian')" ng-class="{disabled : !displayMode['pedestrian']}">
         <h3>Piéton</h3>
         <ul class="unstyled">
             <li>{{distance['pedestrian']}} Km</li>
