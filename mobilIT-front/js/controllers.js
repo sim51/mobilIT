@@ -26,10 +26,11 @@ function FormCtrl($scope, Nominatim, Neo4j) {
     $scope.displayMode = [];
     $scope.displayResultToolBar = false;
 
-    var modeOfTransportList = ['car', 'cycle', 'pedestrian'];
+    var modeOfTransportList = ['car', 'cycle', 'pedestrian', 'cyclerent'];
 
     var modeOfTransportColors = {
         'car': '#0033CC',
+        'cyclerent' : '#ED6319',
         'cycle': '#00CC00',
         'pedestrian': '#E60066'
     };
@@ -43,7 +44,7 @@ function FormCtrl($scope, Nominatim, Neo4j) {
 
     navigator.geolocation.getCurrentPosition(function (position) {
         $scope.map.removeLayer($scope.fromMarker);
-        $scope.fromMarker = new L.marker(new L.LatLng(position.coords.latitude, position.coords.longitude));
+        $scope.fromMarker = new L.marker(new L.LatLng(position.coords.latitude, position.coords.longitude), {icon: beginIcon});
         $scope.fromMarker.addTo($scope.map);
         $scope.map.setView([position.coords.latitude, position.coords.longitude], 15);
     });
@@ -54,14 +55,14 @@ function FormCtrl($scope, Nominatim, Neo4j) {
         Nominatim.locate($scope.from).then(function (locationResp) {
             if (locationResp[0]) {
                 $scope.map.removeLayer($scope.fromMarker);
-                $scope.fromMarker = new L.marker(new L.LatLng(locationResp[0].lat, locationResp[0].lon));
+                $scope.fromMarker = new L.marker(new L.LatLng(locationResp[0].lat, locationResp[0].lon), {icon: beginIcon});
                 $scope.fromMarker.addTo($scope.map);
                 $scope.map.setView([locationResp[0].lat, locationResp[0].lon], 15);
 
                 Nominatim.locate($scope.to).then(function (locationResp) {
                     if (locationResp[0]) {
                         $scope.map.removeLayer($scope.toMarker);
-                        $scope.toMarker = new L.marker(new L.LatLng(locationResp[0].lat, locationResp[0].lon));
+                        $scope.toMarker = new L.marker(new L.LatLng(locationResp[0].lat, locationResp[0].lon), {icon: endIcon});
                         $scope.toMarker.addTo($scope.map);
                         $scope.map.setView([locationResp[0].lat, locationResp[0].lon], 15);
 
@@ -120,12 +121,15 @@ function FormCtrl($scope, Nominatim, Neo4j) {
             $scope.undisplayLayer[aModeOfTransport];
  
             var geojsonLayerStyle = {
-                'color': modeOfTransportColors[aModeOfTransport],
+                'color': modeOfTransportColors[aModeOfTransport]
             };
 
             // geojson layer
             $scope.geojsonLayers[aModeOfTransport] = new L.GeoJSON(null, {
                 style: geojsonLayerStyle,
+                pointToLayer: function (feature, latlng) {
+                    return L.marker(latlng, {icon: liabaveloIcon});
+                },
                 onEachFeature: function (feature, layer) {
                     if (feature.properties) {
                         var popupString = '<div class="popup">';
@@ -141,6 +145,7 @@ function FormCtrl($scope, Nominatim, Neo4j) {
                 }
             });
             $scope.map.addLayer($scope.geojsonLayers[aModeOfTransport]);
+            $scope.geojsonLayers[aModeOfTransport].addData($scope.gesjsonDatas[aModeOfTransport]);
             $scope.geojsonLayers[aModeOfTransport].addData($scope.gesjsonDatas[aModeOfTransport]);
             $scope.map.fitBounds($scope.geojsonLayers[aModeOfTransport].getBounds());
             $scope.displayMode[aModeOfTransport] = true;

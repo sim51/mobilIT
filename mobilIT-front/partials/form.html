@@ -25,16 +25,7 @@
 
 <div id="result" class="row-fluid" ng-show="displayResultToolBar">
 
-    <a id="cycle" class="span4 btn btn-cycle" ng-click="changeDisplayMode('cycle')" ng-class="{disabled : !displayMode['cycle']}">
-        <h3>Vélo</h3>
-        <ul class="unstyled">
-            <li>{{distance['cycle']}} Km</li>
-            <li>{{time['cycle'] | time}} Minutes</li>
-            <li>0 Kg CO2</li>
-        </ul>
-    </a>
-
-    <a  class="span4 btn btn-pedestrian" ng-click="changeDisplayMode('pedestrian')" ng-class="{disabled : !displayMode['pedestrian']}">
+    <a  id="pedestrian" class="span3 btn btn-pedestrian" ng-click="changeDisplayMode('pedestrian')" ng-class="{disabled : !displayMode['pedestrian']}">
         <h3>Piéton</h3>
         <ul class="unstyled">
             <li>{{distance['pedestrian']}} Km</li>
@@ -43,7 +34,25 @@
         </ul>
     </a>
 
-    <a id="car" class="span4 btn btn-primary" ng-click="changeDisplayMode('car')" ng-class="{disabled : !displayMode['car']}">
+    <a id="cyclerent" class="span3 btn btn-cyclerent" ng-click="changeDisplayMode('cyclerent')" ng-class="{disabled : !displayMode['cyclerent']}">
+        <h3>Libiavelo</h3>
+        <ul class="unstyled">
+            <li>{{distance['cyclerent']}} Km</li>
+            <li>{{time['cycle'] | time}} Minutes</li>
+            <li>0 Kg CO2</li>
+        </ul>
+    </a>
+
+    <a id="cycle" class="span3 btn btn-cycle" ng-click="changeDisplayMode('cycle')" ng-class="{disabled : !displayMode['cycle']}">
+        <h3>Vélo</h3>
+        <ul class="unstyled">
+            <li>{{distance['cycle']}} Km</li>
+            <li>{{time['cycle'] | time}} Minutes</li>
+            <li>0 Kg CO2</li>
+        </ul>
+    </a>
+
+    <a id="car" class="span3 btn btn-primary" ng-click="changeDisplayMode('car')" ng-class="{disabled : !displayMode['car']}">
         <h3>Voiture</h3>
         <ul class="unstyled">
             <li>{{distance['car']}} Km</li>

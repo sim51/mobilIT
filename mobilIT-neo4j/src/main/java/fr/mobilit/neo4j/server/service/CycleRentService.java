@@ -87,7 +87,7 @@ public class CycleRentService {
      * @return
      */
     public POI getNearest(Double lon, Double lat, Double distance, Integer status) throws MobilITException {
-        Coordinate coord = new Coordinate(lat, lon);
+        Coordinate coord = new Coordinate(lon, lat);
         EditableLayer cycleLayer = spatial.getOrCreateEditableLayer(Constant.CYCLE_LAYER);
         //@formatter:off
         List<GeoPipeFlow> results = GeoPipeline

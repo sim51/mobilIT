@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import fr.mobilit.neo4j.server.pojo.POI;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
@@ -114,6 +115,34 @@ public class ShortestPathAlgorithm {
         // get the template
         Template template = null;
         template = Velocity.getTemplate("templates/result.vm");
+        // render template
+        StringWriter sw = new StringWriter();
+        template.merge(context, sw);
+        return sw.toString();
+    }
+
+    /**
+     * Generate the http response compatible openLS with velocity template.
+     *
+     * @param path
+     * @return
+     */
+    public static String generateResponse(List<Itinerary> path, List<POI> pois) {
+        // initialize velocity
+        Properties props = new Properties();
+        props.setProperty(VelocityEngine.RESOURCE_LOADER, "classpath");
+        props.setProperty(RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS, "org.apache.velocity.runtime.log.Log4JLogChute");
+        props.setProperty("runtime.log.logsystem.log4j.logger", "VELOCITY");
+        props.setProperty("classpath." + VelocityEngine.RESOURCE_LOADER + ".class",
+                ClasspathResourceLoader.class.getName());
+        Velocity.init(props);
+        VelocityContext context = new VelocityContext();
+        // put parameter for template
+        context.put("path", path);
+        context.put("pois", pois);
+        // get the template
+        Template template = null;
+        template = Velocity.getTemplate("templates/result_with_poi.vm");
         // render template
         StringWriter sw = new StringWriter();
         template.merge(context, sw);

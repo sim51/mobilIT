@@ -1,0 +1,40 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        #foreach( $poi in $pois )
+            {
+                "type": "Feature",
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [$poi.geoPoint.longitude, $poi.geoPoint.latitude]
+                },
+                "properties": {
+                    "name" : "LibiaVelo $poi.name",
+                    "length" : 0,
+                    "time" : 0
+                }
+            },
+        #end
+        #foreach( $relation in $path )
+            {
+                "type": "Feature",
+                "geometry": {
+                    "type": "LineString",
+                    "coordinates": [
+                        #foreach( $seg in $relation.line )
+                            [$seg.longitude, $seg.latitude]#if( $foreach.hasNext ),#end
+                        #end
+                    ]
+                },
+                "properties": {
+                    "name": "$relation.name",
+                    "length": $relation.distance,
+                    "time": $relation.cost
+                }
+            }
+            #if(!$foreach.last)
+                ,
+            #end
+        #end
+      ]
+}

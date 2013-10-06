@@ -116,6 +116,18 @@ public class NamurSearchPathTest extends Neo4jTestCase {
         assertEquals(200, response.getStatus());
     }
 
+    @Test
+    public void testCycleRentPath() {
+        Double lat1 = new Double(50.4658238923077);
+        Double lon1 = new Double(4.86516433846154);
+        Double lat2 = new Double(50.4646013);
+        Double lon2 = new Double(4.874691600000006);
+
+        Long time = System.currentTimeMillis();
+        Response response = searchPlugin.cycleRent(lat1, lon1, lat2, lon2);
+        assertEquals(200, response.getStatus());
+    }
+
     @After
     public void tearDown() throws Exception {
         super.tearDown();
