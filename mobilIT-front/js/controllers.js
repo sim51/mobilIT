@@ -24,6 +24,7 @@ function FormCtrl($scope, Nominatim, Neo4j) {
     $scope.geojsonLayers = [];
     $scope.gesjsonDatas = [];
     $scope.displayMode = [];
+    $scope.displayResultToolBar = false;
 
     var modeOfTransportList = ['car', 'cycle', 'pedestrian'];
 
@@ -33,6 +34,11 @@ function FormCtrl($scope, Nominatim, Neo4j) {
         'pedestrian': '#FF00FF'
     };
 
+    $scope.displayMode = [];
+    for (var x in modeOfTransportList) {
+        $scope.displayMode[x] = false;
+    }
+
     navigator.geolocation.getCurrentPosition(function (position) {
         $scope.map.removeLayer($scope.fromMarker);
         $scope.fromMarker = new L.marker(new L.LatLng(position.coords.latitude, position.coords.longitude));
@@ -40,27 +46,32 @@ function FormCtrl($scope, Nominatim, Neo4j) {
         $scope.map.setView([position.coords.latitude, position.coords.longitude], 15);
     });
 
-    $scope.locateFrom = function () {
+    $scope.search = function () {
+        $scope.displayResultToolBar = false;
         Nominatim.locate($scope.from).then(function (locationResp) {
             if (locationResp[0]) {
                 $scope.map.removeLayer($scope.fromMarker);
                 $scope.fromMarker = new L.marker(new L.LatLng(locationResp[0].lat, locationResp[0].lon));
                 $scope.fromMarker.addTo($scope.map);
                 $scope.map.setView([locationResp[0].lat, locationResp[0].lon], 15);
-            }
-        });
-    };
 
-    $scope.locateTo = function () {
-        Nominatim.locate($scope.to).then(function (locationResp) {
-            if (locationResp[0]) {
-                $scope.map.removeLayer($scope.toMarker);
-                $scope.toMarker = new L.marker(new L.LatLng(locationResp[0].lat, locationResp[0].lon));
-                $scope.toMarker.addTo($scope.map);
-                $scope.map.setView([locationResp[0].lat, locationResp[0].lon], 15);
+                Nominatim.locate($scope.to).then(function (locationResp) {
+                    if (locationResp[0]) {
+                        $scope.map.removeLayer($scope.toMarker);
+                        $scope.toMarker = new L.marker(new L.LatLng(locationResp[0].lat, locationResp[0].lon));
+                        $scope.toMarker.addTo($scope.map);
+                        $scope.map.setView([locationResp[0].lat, locationResp[0].lon], 15);
+
+
+                        for (var x in modeOfTransportList) {
+                            $scope.searchForMode(modeOfTransportList[x]);
+                        }
+                        $scope.displayResultToolBar = true;
+                    }
+                });
             }
         });
-    };
+    }
 
     $scope.searchForMode = function (mode) {
         Neo4j.search(mode,
@@ -70,18 +81,23 @@ function FormCtrl($scope, Nominatim, Neo4j) {
                 $scope.toMarker.getLatLng().lng
             ).then(function (response) {
                 $scope.gesjsonDatas[mode] = response;
-                $scope.undiplayLayer(mode);
-                $scope.diplayLayer(mode);
+                $scope.undisplayLayer(mode);
+                $scope.displayLayer(mode);
+
+                if(!$scope.distance)
+                    $scope.distance = [];
+                var map = _.map(response.features, function (feature) { return  feature.properties.length });
+                $scope.distance[mode] = Math.round10((_.reduce(map, function(memo, num){ return memo + num; }, 0) / 1000), -1);
+
+                if(!$scope.time)
+                    $scope.time = [];
+                var mapTime = _.map(response.features, function (feature) { return  feature.properties.time });
+                $scope.time[mode] = mapTime[0];
             });
     };
 
-    $scope.search = function () {
-        for (var x in modeOfTransportList) {
-            $scope.searchForMode(modeOfTransportList[x]);
-        }
-    };
 
-    $scope.undiplayLayer = function (aModeOfTransport) {
+    $scope.undisplayLayer = function (aModeOfTransport) {
         console.log("action undisplay 2");
         if ($scope.geojsonLayers[aModeOfTransport]) {
             console.log("action undisplay 3");
@@ -90,9 +106,9 @@ function FormCtrl($scope, Nominatim, Neo4j) {
         $scope.displayMode[aModeOfTransport] = false;
     };
 
-    $scope.diplayLayer = function (aModeOfTransport) {
+    $scope.displayLayer = function (aModeOfTransport) {
         if($scope.gesjsonDatas[aModeOfTransport]) {
-            $scope.undiplayLayer[aModeOfTransport];
+            $scope.undisplayLayer[aModeOfTransport];
  
             var geojsonLayerStyle = {
                 'color': modeOfTransportColors[aModeOfTransport],
@@ -126,11 +142,11 @@ function FormCtrl($scope, Nominatim, Neo4j) {
         console.log("klkfdlk");
         if ($scope.displayMode[aModeOfTransport]) {
             console.log("action undisplay");
-            $scope.undiplayLayer(aModeOfTransport);
+            $scope.undisplayLayer(aModeOfTransport);
         }
         else {
             console.log("action display");
-            $scope.diplayLayer(aModeOfTransport);
+            $scope.displayLayer(aModeOfTransport);
         }
     };
 }

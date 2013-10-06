@@ -1,7 +1,7 @@
 'use strict';
 
 /* App Module */
-var app = angular.module('mobilIT', ['Services']);
+var app = angular.module('mobilIT', ['Services', 'Filter']);
 
 app.config(function ($routeProvider) {
     $routeProvider

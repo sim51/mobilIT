@@ -37,7 +37,7 @@ public class Constant {
     public static final Integer                DEFAULT_SPEED            = 50;
     public static final Integer                DEFAULT_CYCLE_SPEED      = 18;
     public static final Integer                DEFAULT_PEDESTRIAN_SPEED = 5;
-    public static final Double                 INFINY                   = new Double(99999);
+    public static final Double                 INFINY                   = new Double(999999999);
 
     // constante for geo zone
     public static final String                 NANTES_GEO_CODE          = "FR_NTS";

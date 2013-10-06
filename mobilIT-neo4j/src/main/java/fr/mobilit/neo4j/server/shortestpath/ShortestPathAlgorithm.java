@@ -85,6 +85,7 @@ public class ShortestPathAlgorithm {
                 Double distance = (Double) relation.getProperty("length", 0.0);
                 path.setDistance(distance);
                 itinerary.add(path);
+                path.setCost(sp.getCost());
             }
             return itinerary;
         } catch (MobilITException e) {

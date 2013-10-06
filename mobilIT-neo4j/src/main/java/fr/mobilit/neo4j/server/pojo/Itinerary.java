@@ -31,10 +31,10 @@ public class Itinerary {
 
     private String         name;
     private Double         distance;
+    private Double         cost;
     private List<GeoPoint> line = new ArrayList<GeoPoint>();
 
     /**
-     * @param line
      */
     public Itinerary() {
         super();
@@ -82,4 +82,11 @@ public class Itinerary {
         this.line = line;
     }
 
+    public Double getCost() {
+        return cost;
+    }
+
+    public void setCost(Double cost) {
+        this.cost = cost;
+    }
 }
