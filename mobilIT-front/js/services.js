@@ -3,7 +3,7 @@
 angular.module('Services', [])
     .value('Config', {
         nominatimurl: 'http://nominatim.openstreetmap.org',
-        neo4jurl: 'http://172.17.127.183:7474/mobilit',
+        neo4jurl: 'http://localhost:7474/mobilit',
         SUCCES: 'TRUE'
     })
 
