@@ -39,6 +39,8 @@ function FormCtrl($scope, Nominatim, Neo4j) {
         $scope.displayMode[x] = false;
     }
 
+    $scope.error = [];
+
     navigator.geolocation.getCurrentPosition(function (position) {
         $scope.map.removeLayer($scope.fromMarker);
         $scope.fromMarker = new L.marker(new L.LatLng(position.coords.latitude, position.coords.longitude));
@@ -48,6 +50,7 @@ function FormCtrl($scope, Nominatim, Neo4j) {
 
     $scope.search = function () {
         $scope.displayResultToolBar = false;
+        $scope.error = null;
         Nominatim.locate($scope.from).then(function (locationResp) {
             if (locationResp[0]) {
                 $scope.map.removeLayer($scope.fromMarker);
@@ -68,7 +71,13 @@ function FormCtrl($scope, Nominatim, Neo4j) {
                         }
                         $scope.displayResultToolBar = true;
                     }
+                    else {
+                        $scope.error = "Adresse d'arrivée non trouvée";
+                    }
                 });
+            }
+            else {
+                $scope.error = "Adresse de départ non trouvée";
             }
         });
     }

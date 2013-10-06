@@ -7,4 +7,14 @@ footer p {
     text-align: center;
 }
 
-#map{ height: 400px;}
+h2, h3 { text-align: center; }
+
+input[type="text"] {
+    width: 97%;
+    text-align: center;
+}
+
+#map{
+    height: 400px;
+    margin-top: 20px;
+}
