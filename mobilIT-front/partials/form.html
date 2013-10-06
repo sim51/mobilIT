@@ -19,7 +19,7 @@
 
 <div class="row-fluid" ng-show="displayResultToolBar">
 
-    <a class="span4 btn btn-primary" ng-click="changeDisplayMode('cycle')" ng-class="{disabled : !displayMode['cycle']}">
+    <a class="span4 btn btn-cycle" ng-click="changeDisplayMode('cycle')" ng-class="{disabled : !displayMode['cycle']}">
         <h2>Vélo</h2>
         <ul class="unstyled">
             <li>{{distance['cycle']}} Km</li>
@@ -29,7 +29,7 @@
 
     </a>
 
-    <a class="span4 btn btn-primary" ng-click="changeDisplayMode('pedestrian')" ng-class="{disabled : !displayMode['pedestrian']}">
+    <a class="span4 btn btn-pedestrian" ng-click="changeDisplayMode('pedestrian')" ng-class="{disabled : !displayMode['pedestrian']}">
         <h2>Piéton</h2>
         <ul class="unstyled">
             <li>{{distance['pedestrian']}} Km</li>
