@@ -29,9 +29,9 @@ function FormCtrl($scope, Nominatim, Neo4j) {
     var modeOfTransportList = ['car', 'cycle', 'pedestrian'];
 
     var modeOfTransportColors = {
-        'car': '#FFA500',
-        'cycle': '#00FFFF',
-        'pedestrian': '#FF00FF'
+        'car': '#0033CC',
+        'cycle': '#00CC00',
+        'pedestrian': '#E60066'
     };
 
     $scope.displayMode = [];
