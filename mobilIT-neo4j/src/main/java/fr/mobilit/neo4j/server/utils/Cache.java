@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with MobilIT. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  * @See https://github.com/sim51/mobilIT
  */
 package fr.mobilit.neo4j.server.utils;
@@ -24,11 +24,11 @@ import org.neo4j.server.logging.Logger;
 
 public class Cache {
 
-    private CacheManager         cacheManager;
+    private static final String CACHENAME = "play";
+    private static Logger LOGGER = Logger.getLogger(Cache.class.getName());
+    private static Cache uniqueInstance;
+    private CacheManager cacheManager;
     private net.sf.ehcache.Cache cache;
-    private static Cache         uniqueInstance;
-    private static final String  CACHENAME = "play";
-    private static Logger LOGGER    = Logger.getLogger(Cache.class.getName());
 
     private Cache() {
         this.cacheManager = CacheManager.create();

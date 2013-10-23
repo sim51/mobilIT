@@ -13,14 +13,17 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with MobilIT. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  * @See https://github.com/sim51/mobilIT
  */
 package fr.mobilit.neo4j.server;
 
-import java.io.File;
-import java.nio.charset.Charset;
-import java.util.Iterator;
+import fr.mobilit.neo4j.server.service.CycleRentService;
+import fr.mobilit.neo4j.server.service.ParkingService;
+import fr.mobilit.neo4j.server.utils.Constant;
+import org.neo4j.gis.spatial.SpatialDatabaseService;
+import org.neo4j.gis.spatial.osm.OSMImporter;
+import org.neo4j.graphdb.GraphDatabaseService;
 
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
@@ -30,20 +33,14 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-
-import org.neo4j.gis.spatial.SpatialDatabaseService;
-import org.neo4j.gis.spatial.osm.OSMImporter;
-import org.neo4j.graphdb.GraphDatabaseService;
-
-import fr.mobilit.neo4j.server.service.CycleRentService;
-import fr.mobilit.neo4j.server.service.ParkingService;
-import fr.mobilit.neo4j.server.utils.Constant;
+import java.io.File;
+import java.nio.charset.Charset;
+import java.util.Iterator;
 
 /**
  * Neo4j REST interface that manage imports.
- * 
+ *
  * @author bsimard
- * 
  */
 @Path("/import")
 public class Import {
@@ -51,8 +48,7 @@ public class Import {
     /**
      * Graph database.
      */
-    private final GraphDatabaseService   db;
-
+    private final GraphDatabaseService db;
     /**
      * Spatial database.
      */
@@ -60,7 +56,7 @@ public class Import {
 
     /**
      * Constructor.
-     * 
+     *
      * @param db
      */
     public Import(@Context GraphDatabaseService db) {
@@ -70,7 +66,7 @@ public class Import {
 
     /**
      * Action to import OSM file into the neo4j spatial database.
-     * 
+     *
      * @param files list of osm file on the FS separate by '@' character.
      * @return OK or the error.
      */
@@ -99,8 +95,6 @@ public class Import {
                     }
                 }
             }
-            // index all osm data
-            importer.reIndex(db, 1000, true, true);
 
             // import cycle rent POI
             Iterator cycleIter = Constant.CYCLE_SERVICE.keySet().iterator();
@@ -110,13 +104,18 @@ public class Import {
                 service.getGeoService(geocode).importStation();
             }
 
-            // import parking rent POI
-            Iterator parkingIter = Constant.PARKING_SERVICE.keySet().iterator();
-            while (parkingIter.hasNext()) {
-                String geocode = (String) parkingIter.next();
-                ParkingService service = new ParkingService(spatial);
-                service.getGeoService(geocode).importParking();
-            }
+            return Response.status(Status.OK).build();
+        } catch (Exception e) {
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage() + " :" + e.getCause()).build();
+        }
+    }
+
+    @POST
+    @Produces(MediaType.TEXT_PLAIN)
+    @Path("/gtfs")
+    public Response gtfs(@FormParam("files") String files) {
+        String[] osmFiles = files.split("@");
+        try {
             return Response.status(Status.OK).build();
         } catch (Exception e) {
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage() + " :" + e.getCause()).build();

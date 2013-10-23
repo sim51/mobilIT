@@ -1,43 +1,35 @@
 package org.neo4j.gis.spatial.osm.writer;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
-
 import org.neo4j.collections.rtree.Envelope;
 import org.neo4j.gis.spatial.Constants;
 import org.neo4j.gis.spatial.osm.OSMImporter;
 import org.neo4j.gis.spatial.osm.OSMRelation;
 import org.neo4j.gis.spatial.osm.utils.GeometryMetaData;
-import org.neo4j.gis.spatial.osm.utils.StatsManager;
-import org.neo4j.graphdb.Direction;
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.PropertyContainer;
-import org.neo4j.graphdb.Relationship;
-import org.neo4j.graphdb.RelationshipType;
-import org.neo4j.graphdb.Transaction;
+import org.neo4j.graphdb.*;
 import org.neo4j.graphdb.index.Index;
 import org.neo4j.graphdb.index.IndexHits;
+
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class OSMGraphWriter extends OSMWriter<Node> {
 
     private GraphDatabaseService graphDb;
-    private Node                 osm_root;
-    private long                 currentChangesetId = -1;
-    private Node                 currentChangesetNode;
-    private long                 currentUserId      = -1;
-    private Node                 currentUserNode;
-    private Node                 usersNode;
-    private HashMap<Long, Node>  changesetNodes     = new HashMap<Long, Node>();
-    private Transaction          tx;
-    private int                  checkCount         = 0;
-    private int                  txInterval;
+    private Node osm_root;
+    private long currentChangesetId = -1;
+    private Node currentChangesetNode;
+    private long currentUserId = -1;
+    private Node currentUserNode;
+    private Node usersNode;
+    private HashMap<Long, Node> changesetNodes = new HashMap<Long, Node>();
+    private Transaction tx;
+    private int checkCount = 0;
+    private int txInterval;
 
-    public OSMGraphWriter(GraphDatabaseService graphDb, StatsManager statsManager, OSMImporter osmImporter,
-            int txInterval) {
-        super(statsManager, osmImporter);
+    public OSMGraphWriter(GraphDatabaseService graphDb, OSMImporter osmImporter, int txInterval) {
+        super(osmImporter);
         this.graphDb = graphDb;
         this.txInterval = txInterval;
         if (this.txInterval < 100) {
@@ -114,9 +106,7 @@ public class OSMGraphWriter extends OSMWriter<Node> {
 
     @Override
     public void addNodeTags(Node node, LinkedHashMap<String, Object> tags, String type) {
-        logNodeAddition(tags, type);
         if (node != null && tags.size() > 0) {
-            statsManager.addToTagStats(type, tags.keySet());
             Node tagsNode = graphDb.createNode();
             addProperties(tagsNode, tags);
             node.createRelationshipTo(tagsNode, OSMRelation.TAGS);
@@ -132,10 +122,8 @@ public class OSMGraphWriter extends OSMWriter<Node> {
             Node geomNode = graphDb.createNode();
             geomNode.setProperty("gtype", gtype);
             geomNode.setProperty("vertices", vertices);
-            geomNode.setProperty("bbox",
-                    new double[] { bbox.getMinX(), bbox.getMaxX(), bbox.getMinY(), bbox.getMaxY() });
+            geomNode.setProperty("bbox", new double[]{bbox.getMinX(), bbox.getMaxX(), bbox.getMinY(), bbox.getMaxY()});
             node.createRelationshipTo(geomNode, OSMRelation.GEOM);
-            statsManager.addGeomStats(gtype);
         }
     }
 
@@ -160,27 +148,6 @@ public class OSMGraphWriter extends OSMWriter<Node> {
             }
         }
         checkTx();
-        return node;
-    }
-
-    protected Node addNodeWithCheck(String name, Map<String, Object> properties, String indexKey) {
-        Node node = null;
-        Object indexValue = (indexKey == null) ? null : properties.get(indexKey);
-        if (indexValue != null && (createdNodes + foundNodes < 100 || foundNodes > 10)) {
-            node = indexFor(name).get(indexKey, properties.get(indexKey)).getSingle();
-        }
-        if (node == null) {
-            node = graphDb.createNode();
-            addProperties(node, properties);
-            if (indexValue != null) {
-                indexFor(name).add(node, indexKey, properties.get(indexKey));
-            }
-            createdNodes++;
-            checkTx();
-        }
-        else {
-            foundNodes++;
-        }
         return node;
     }
 
@@ -226,11 +193,10 @@ public class OSMGraphWriter extends OSMWriter<Node> {
         }
         Node node = changesetNodes.get(osmId);
         if (node == null) {
-            logNodeFoundFrom("node-index");
+            LOG.warn("node-index not found");
             return indexFor("node").get("node_osm_id", osmId).getSingle();
-        }
-        else {
-            logNodeFoundFrom("changeset");
+        } else {
+            LOG.warn("Changeset not found");
             return node;
         }
     }
@@ -271,8 +237,7 @@ public class OSMGraphWriter extends OSMWriter<Node> {
                     currentChangesetId);
             if (result.size() > 0) {
                 currentChangesetNode = result.getSingle();
-            }
-            else {
+            } else {
                 LinkedHashMap<String, Object> changesetProps = new LinkedHashMap<String, Object>();
                 changesetProps.put(osmImporter.INDEX_NAME_CHANGESET, currentChangesetId);
                 changesetProps.put("timestamp", nodeProps.get("timestamp"));
@@ -298,8 +263,7 @@ public class OSMGraphWriter extends OSMWriter<Node> {
                 IndexHits<Node> result = indexFor(osmImporter.INDEX_NAME_USER).get("uid", currentUserId);
                 if (result.size() > 0) {
                     currentUserNode = indexFor(osmImporter.INDEX_NAME_USER).get("uid", currentUserId).getSingle();
-                }
-                else {
+                } else {
                     LinkedHashMap<String, Object> userProps = new LinkedHashMap<String, Object>();
                     userProps.put("uid", currentUserId);
                     userProps.put("name", name);
@@ -320,13 +284,9 @@ public class OSMGraphWriter extends OSMWriter<Node> {
         } catch (Exception e) {
             currentUserId = -1;
             currentUserNode = null;
-            logMissingUser(nodeProps);
+            LOG.warn("User not found " + nodeProps.toString());
         }
         return currentUserNode;
-    }
-
-    public String toString() {
-        return "OSMGraphWriter: DatabaseService[" + graphDb + "]:txInterval[" + this.txInterval + "]";
     }
 
 }
